@@ -41,11 +41,12 @@ const Team = () => {
   };
 
   const handleLookup = async () => {
-    if (!rollNumberInput.trim()) return;
+    if (!rollNumberInput.trim() || rollNumberInput.length < 3) return;
+    const fullPrn = `252921${rollNumberInput.trim()}`;
     setIsLooking(true);
     setLookupResult(null);
     try {
-      const res = await teamService.lookupStudent(rollNumberInput.trim());
+      const res = await teamService.lookupStudent(fullPrn);
       setLookupResult(res.data.data);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Student not found');
@@ -56,10 +57,11 @@ const Team = () => {
 
   const handleAddMember = async () => {
     if (!lookupResult || !team) return;
+    const fullPrn = `252921${rollNumberInput.trim()}`;
     setIsAdding(true);
     setProcessing({ isOpen: true, status: 'loading', message: `Adding ${lookupResult.firstName}...` });
     try {
-      const res = await teamService.addMember(team._id, rollNumberInput.trim());
+      const res = await teamService.addMember(team._id, fullPrn);
       setTeam(res.data.data);
       setShowAddModal(false);
       setRollNumberInput('');
@@ -272,10 +274,14 @@ const Team = () => {
       >
         <div className="space-y-4">
           <p className="text-dark-400 text-sm">Search for a student by their roll number to add them to your team.</p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400 font-mono select-none">
+              252921
+            </span>
             <input
-              className="input flex-1"
-              placeholder="Enter roll number (e.g. CS2021002)"
+              className="input flex-1 pl-20"
+              placeholder="001"
+              maxLength={3}
               value={rollNumberInput}
               onChange={(e) => { setRollNumberInput(e.target.value); setLookupResult(null); }}
               onKeyDown={(e) => e.key === 'Enter' && handleLookup()}

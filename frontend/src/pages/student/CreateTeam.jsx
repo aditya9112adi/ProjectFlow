@@ -40,11 +40,12 @@ const schema = z.object({
 const MemberInput = ({ label, name, placeholder, register, error, watch, onSendInvite, invitationStatus }) => {
   const [studentName, setStudentName] = useState('');
   const [isLooking, setIsLooking] = useState(false);
-  const prnValue = watch(name);
+  const prnSuffix = watch(name);
+  const prnValue = prnSuffix ? `252921${prnSuffix}` : '';
 
   useEffect(() => {
     const lookup = async () => {
-      if (!prnValue || prnValue.length < 5) {
+      if (!prnSuffix || prnSuffix.length < 3) {
         setStudentName('');
         return;
       }
@@ -73,10 +74,12 @@ const MemberInput = ({ label, name, placeholder, register, error, watch, onSendI
       <Input 
         label={label} 
         placeholder={placeholder} 
-        error={error} 
+        error={error}
+        prefix="252921"
+        maxLength={3}
         {...register(name)} 
       />
-      {(prnValue && prnValue.length >= 5) && (
+      {(prnSuffix && prnSuffix.length >= 3) && (
         <div className="pl-4 border-l-2 border-dark-600 flex flex-col md:flex-row gap-3">
           <div className="flex-1">
             <Input
@@ -179,9 +182,9 @@ const CreateTeam = () => {
     setProcessing({ isOpen: true, status: 'loading', message: 'Creating your team...' });
     try {
       // Gather roll numbers
-      const memberRollNumbers = [data.member1, data.member2];
+      const memberRollNumbers = [`252921${data.member1}`, `252921${data.member2}`];
       if (data.member3) {
-        memberRollNumbers.push(data.member3);
+        memberRollNumbers.push(`252921${data.member3}`);
       }
 
       await teamService.createTeam({
