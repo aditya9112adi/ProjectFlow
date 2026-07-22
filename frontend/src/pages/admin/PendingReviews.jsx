@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, ArrowRight, Clock, Link as LinkIcon } from 'lucide-react';
+import { ClipboardList, ArrowRight, Clock, Link as LinkIcon, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { projectService } from '../../services/project.service.js';
 import Badge from '../../components/ui/Badge.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
@@ -11,6 +11,8 @@ const PendingReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [rejectModal, setRejectModal] = useState({ isOpen: false, projectId: null, activePhase: null, feedback: '' });
+  const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
 
   useEffect(() => {
     fetchReviews();
@@ -38,6 +40,38 @@ const PendingReviews = () => {
   const filteredReviews = reviews.filter(r => 
     activeFilter === 'all' || (r.phase || r.currentPhase) === activeFilter
   );
+
+  const processReview = async (projectId, activePhase, status, feedback = '') => {
+    setProcessing({ isOpen: true, status: 'loading', message: 'Processing your request...' });
+    try {
+      await projectService.reviewPhase(projectId, activePhase, { decision: status, feedback });
+      setProcessing({ isOpen: true, status: 'success', message: `Submission ${status} successfully!` });
+      fetchReviews();
+      setTimeout(() => {
+        setProcessing(prev => ({ ...prev, isOpen: false }));
+      }, 2500);
+    } catch (err) {
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to process submission' });
+      setTimeout(() => {
+        setProcessing(prev => ({ ...prev, isOpen: false }));
+      }, 3000);
+    }
+  };
+
+  const handleReviewClick = (project, activePhase, status) => {
+    if (status === 'rejected') {
+      setRejectModal({ isOpen: true, projectId: project.projectId || project._id, activePhase, feedback: '' });
+    } else {
+      processReview(project.projectId || project._id, activePhase, status);
+    }
+  };
+
+  const submitReject = () => {
+    if (!rejectModal.feedback.trim()) return; // Will disable button if empty
+    const { projectId, activePhase, feedback } = rejectModal;
+    setRejectModal({ isOpen: false, projectId: null, activePhase: null, feedback: '' });
+    processReview(projectId, activePhase, 'rejected', feedback);
+  };
 
   if (isLoading) return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -92,59 +126,11 @@ const PendingReviews = () => {
             const activePhase = project.phase || project.currentPhase;
             const phaseData = project.phases?.[activePhase];
 
-            const handleReview = async (status) => {
-              let feedback = '';
-              if (status === 'rejected') {
-                feedback = window.prompt('Please provide a reason for rejection:');
-                if (feedback === null) return;
-                if (!feedback.trim()) {
-                  alert('Rejection reason is required');
-                  return;
-                }
-              }
-              
-              try {
-                await projectService.reviewPhase(project.projectId || project._id, activePhase, { decision: status, feedback });
-                alert(`Submission ${status} successfully`);
-                fetchReviews();
-              } catch (err) {
-                alert(err.response?.data?.message || 'Failed to review submission');
-              }
-            };
-
-            return (
-              <div key={`${project.projectId}-${activePhase}`} className="card p-5 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Badge variant="warning" className="capitalize">
-                        {activePhase} Phase
-                      </Badge>
-                      <span className="text-dark-500 text-xs flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        Submitted {project.submittedAt ? formatDistanceToNow(new Date(project.submittedAt)) : 'recently'}
-                      </span>
-                    </div>
-                    <h3 className="text-dark-50 text-lg font-bold">{project.projectTitle || project.title}</h3>
-                    <div className="mt-2 space-y-1">
-                      <p className="text-dark-400 text-sm font-semibold">Team: {project.teamName || project.team?.name}</p>
-                      {project.members && project.members.length > 0 && (
-                        <div className="pl-2 border-l-2 border-dark-700 mt-1 space-y-1">
-                          {project.members.map((member) => (
-                            <p key={member.user?._id || Math.random()} className="text-dark-300 text-xs flex items-center gap-1.5">
-                              <span>{member.user?.studentName || `${member.user?.firstName || ''} ${member.user?.lastName || ''}`.trim() || 'Unknown'}</span>
-                              <span className="text-dark-500">({member.user?.prn || member.user?.rollNumber})</span>
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
                   <div className="flex-shrink-0 flex gap-2">
-                    <button onClick={() => handleReview('approved')} className="btn-primary bg-emerald-600 hover:bg-emerald-500 border-emerald-500">
+                    <button onClick={() => handleReviewClick(project, activePhase, 'approved')} className="btn-primary bg-emerald-600 hover:bg-emerald-500 border-emerald-500">
                       Approve
                     </button>
-                    <button onClick={() => handleReview('rejected')} className="btn-primary bg-red-600 hover:bg-red-500 border-red-500">
+                    <button onClick={() => handleReviewClick(project, activePhase, 'rejected')} className="btn-primary bg-red-600 hover:bg-red-500 border-red-500">
                       Reject
                     </button>
                     <Link
@@ -203,6 +189,96 @@ const PendingReviews = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {rejectModal.isOpen && (
+        <div className="fixed inset-0 bg-dark-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-dark-900 border border-dark-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in">
+            <div className="p-4 border-b border-dark-800 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white">Reject Submission</h3>
+              <button 
+                onClick={() => setRejectModal({ isOpen: false, projectId: null, activePhase: null, feedback: '' })}
+                className="text-dark-400 hover:text-white transition-colors p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5">
+              <label className="block text-sm font-medium text-dark-300 mb-2">
+                Reason for rejection
+              </label>
+              <textarea
+                value={rejectModal.feedback}
+                onChange={(e) => setRejectModal(prev => ({ ...prev, feedback: e.target.value }))}
+                placeholder="Explain what needs to be improved..."
+                className="input-field w-full min-h-[120px] resize-none"
+                autoFocus
+              />
+            </div>
+            <div className="p-4 border-t border-dark-800 flex justify-end gap-3 bg-dark-800/30">
+              <button 
+                onClick={() => setRejectModal({ isOpen: false, projectId: null, activePhase: null, feedback: '' })}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={submitReject}
+                disabled={!rejectModal.feedback.trim()}
+                className="btn-primary bg-red-600 hover:bg-red-500 border-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PhonePe Style Processing Modal */}
+      {processing.isOpen && (
+        <div className="fixed inset-0 bg-dark-950/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-4 transition-all duration-300">
+          <div className="flex flex-col items-center transform scale-110 animate-in zoom-in duration-300">
+            {processing.status === 'loading' && (
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full border-4 border-dark-800 border-t-primary-500 animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-dark-900 shadow-inner flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-primary-500 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {processing.status === 'success' && (
+              <div className="w-24 h-24 rounded-full bg-emerald-500/20 flex items-center justify-center animate-in zoom-in duration-300">
+                <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.4)]">
+                  <CheckCircle className="w-10 h-10 text-white animate-in slide-in-from-bottom-4 duration-500" strokeWidth={3} />
+                </div>
+              </div>
+            )}
+
+            {processing.status === 'error' && (
+              <div className="w-24 h-24 rounded-full bg-red-500/20 flex items-center justify-center animate-in zoom-in duration-300">
+                <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-[0_0_40px_rgba(239,68,68,0.4)]">
+                  <XCircle className="w-10 h-10 text-white animate-in slide-in-from-bottom-4 duration-500" strokeWidth={3} />
+                </div>
+              </div>
+            )}
+
+            <h3 className={`mt-8 text-2xl font-black tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150 ${
+              processing.status === 'loading' ? 'text-white' : 
+              processing.status === 'success' ? 'text-emerald-400' : 'text-red-400'
+            }`}>
+              {processing.status === 'loading' ? 'Processing...' : 
+               processing.status === 'success' ? 'Approved!' : 'Error'}
+            </h3>
+            
+            <p className="text-dark-300 mt-2 text-center max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
+              {processing.message}
+            </p>
+          </div>
         </div>
       )}
     </div>
