@@ -99,6 +99,20 @@ const MemberInput = ({ label, name, placeholder, register, error, watch, onSendI
                 <div className="px-4 py-2.5 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold text-sm flex items-center gap-2 h-[42px]">
                   <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span> Pending
                 </div>
+              ) : invitationStatus === 'rejected' ? (
+                <div className="flex items-center gap-2">
+                  <div className="px-4 py-2.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 font-semibold text-sm flex items-center gap-2 h-[42px]">
+                    <span className="w-2 h-2 rounded-full bg-red-400"></span> Declined
+                  </div>
+                  <Button 
+                    type="button" 
+                    onClick={() => onSendInvite(prnValue)}
+                    className="h-[42px]"
+                    variant="secondary"
+                  >
+                    Resend
+                  </Button>
+                </div>
               ) : (
                 <Button 
                   type="button" 
