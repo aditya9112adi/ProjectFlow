@@ -76,11 +76,11 @@ const Login = () => {
             <img src="/logo.png" alt="ProjectFlow Logo" className="w-11 h-11 object-contain drop-shadow-lg" />
             <span className="text-white font-black text-xl">ProjectFlow</span>
           </div>
-          <div className="flex-1 flex items-center justify-center my-8">
+          <div className="flex-1 flex items-center justify-center my-4 min-h-0">
             <img 
               src="/login-illustration.png" 
               alt="ProjectFlow Workflow" 
-              className="w-full max-w-xl object-contain drop-shadow-2xl rounded-2xl"
+              className="w-full h-full max-w-xl object-contain drop-shadow-2xl rounded-2xl"
             />
           </div>
           <p className="text-dark-600 text-sm">© 2025 ProjectFlow. Academic Excellence Platform.</p>
