@@ -6,6 +6,7 @@ import Input from '../../components/ui/Input.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import LoadingSkeleton from '../../components/ui/LoadingSkeleton.jsx';
+import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 
 const Marks = () => {
   const [students, setStudents] = useState([]);
@@ -13,8 +14,8 @@ const Marks = () => {
   const [searchStudent, setSearchStudent] = useState('');
   const [searchTeam, setSearchTeam] = useState('');
   const [minTotalMarks, setMinTotalMarks] = useState('');
-  const [editingRows, setEditingRows] = useState({}); // { studentId: { proposalMarks, pptMarks, prototypeMarks, reportMarks } }
-  const [savingRows, setSavingRows] = useState({});
+  const [editingRows, setEditingRows] = useState({}); // { studentId: { proposalMarks, pptMarks, prototypeMarks, reportMarks, presentationMarks } }
+  const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
 
   useEffect(() => {
     fetchMarks();
@@ -34,7 +35,7 @@ const Marks = () => {
 
   const handleDownloadSheet = () => {
     // Generate CSV
-    const headers = ['Student Name', 'PRN', 'Team Name', 'Proposal', 'PPT', 'Prototype', 'Report', 'Total'];
+    const headers = ['Student Name', 'PRN', 'Team Name', 'Proposal', 'PPT', 'Prototype', 'Report', 'Presentation', 'Total'];
     const csvRows = [];
     csvRows.push(headers.join(','));
 
@@ -47,6 +48,7 @@ const Marks = () => {
         s.marks.pptMarks || 0,
         s.marks.prototypeMarks || 0,
         s.marks.reportMarks || 0,
+        s.marks.presentationMarks || 0,
         s.marks.totalMarks || 0
       ];
       csvRows.push(row.join(','));
@@ -70,6 +72,7 @@ const Marks = () => {
         pptMarks: student.marks.pptMarks,
         prototypeMarks: student.marks.prototypeMarks,
         reportMarks: student.marks.reportMarks,
+        presentationMarks: student.marks.presentationMarks,
       }
     }));
   };
@@ -99,7 +102,7 @@ const Marks = () => {
     const editData = editingRows[student.studentId];
     if (!editData) return;
 
-    setSavingRows(prev => ({ ...prev, [student.studentId]: true }));
+    setProcessing({ isOpen: true, status: 'loading', message: `Saving marks for ${student.studentName}...` });
     try {
       await teamMarksService.saveStudentMarks([{
         studentId: student.studentId,
@@ -108,31 +111,32 @@ const Marks = () => {
         pptMarks: editData.pptMarks,
         prototypeMarks: editData.prototypeMarks,
         reportMarks: editData.reportMarks,
+        presentationMarks: editData.presentationMarks,
       }]);
-      toast.success('Marks saved successfully');
+      setProcessing({ isOpen: true, status: 'success', message: 'Marks saved successfully' });
       cancelEditing(student.studentId);
       await fetchMarks();
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error('Failed to save marks');
-    } finally {
-      setSavingRows(prev => ({ ...prev, [student.studentId]: false }));
+      setProcessing({ isOpen: true, status: 'error', message: 'Failed to save marks' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     }
   };
 
   const handleToggleLock = async (student) => {
-    setSavingRows(prev => ({ ...prev, [student.studentId]: true }));
+    setProcessing({ isOpen: true, status: 'loading', message: student.marks.isLocked ? 'Unlocking marks...' : 'Locking marks...' });
     try {
       await teamMarksService.saveStudentMarks([{
         studentId: student.studentId,
         teamId: student.teamId,
         isLocked: !student.marks.isLocked
       }]);
-      toast.success(student.marks.isLocked ? 'Marks unlocked' : 'Marks locked');
+      setProcessing({ isOpen: true, status: 'success', message: student.marks.isLocked ? 'Marks unlocked' : 'Marks locked' });
       await fetchMarks();
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error('Failed to toggle lock status');
-    } finally {
-      setSavingRows(prev => ({ ...prev, [student.studentId]: false }));
+      setProcessing({ isOpen: true, status: 'error', message: 'Failed to toggle lock status' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     }
   };
 
@@ -194,6 +198,7 @@ const Marks = () => {
                 <th className="px-6 py-4 font-semibold text-center">PPT<br/><span className="text-xs text-dark-400">(Max 10)</span></th>
                 <th className="px-6 py-4 font-semibold text-center">Prototype<br/><span className="text-xs text-dark-400">(Max 10)</span></th>
                 <th className="px-6 py-4 font-semibold text-center">Report<br/><span className="text-xs text-dark-400">(Max 10)</span></th>
+                <th className="px-6 py-4 font-semibold text-center">Presentation<br/><span className="text-xs text-dark-400">(Max 10)</span></th>
                 <th className="px-6 py-4 font-semibold text-center">Total</th>
                 <th className="px-6 py-4 font-semibold text-right">Actions</th>
               </tr>
@@ -209,7 +214,7 @@ const Marks = () => {
                 ))
               ) : filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="px-6 py-8 text-center text-dark-400">
+                  <td colSpan="9" className="px-6 py-8 text-center text-dark-400">
                     No students found matching filters.
                   </td>
                 </tr>
@@ -227,11 +232,15 @@ const Marks = () => {
                         <div className="text-xs text-dark-400">{student.prn || 'No PRN'}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <Badge variant="info">{student.teamName}</Badge>
+                        {student.teamId ? (
+                          <Badge variant="info">{student.teamName}</Badge>
+                        ) : (
+                          <span className="text-dark-500 text-sm">No Team</span>
+                        )}
                       </td>
 
                       {/* Marks Columns */}
-                      {['proposal', 'ppt', 'prototype', 'report'].map((phase) => (
+                      {['proposal', 'ppt', 'prototype', 'report', 'presentation'].map((phase) => (
                         <td key={phase} className="px-2 py-4 text-center">
                           {isEditing ? (
                             <input
@@ -241,7 +250,6 @@ const Marks = () => {
                               className="w-16 bg-dark-950 border border-dark-700 rounded-lg px-2 py-1 text-center text-white focus:border-primary-500 outline-none transition-colors"
                               value={editData[`${phase}Marks`] !== undefined ? editData[`${phase}Marks`] : ''}
                               onChange={(e) => handleInputChange(student.studentId, `${phase}Marks`, e.target.value)}
-                              disabled={isSaving}
                             />
                           ) : (
                             <span className="font-medium text-white">
@@ -254,7 +262,7 @@ const Marks = () => {
                       {/* Total */}
                       <td className="px-6 py-4 text-center">
                         <span className="font-bold text-primary-400">{student.marks.totalMarks || 0}</span>
-                        <span className="text-dark-500 text-xs ml-1">/ 40</span>
+                        <span className="text-dark-500 text-xs ml-1">/ 50</span>
                       </td>
 
                       {/* Actions */}
@@ -264,7 +272,6 @@ const Marks = () => {
                             <>
                               <button
                                 onClick={() => cancelEditing(student.studentId)}
-                                disabled={isSaving}
                                 className="p-2 text-dark-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
                                 title="Cancel"
                               >
@@ -272,7 +279,6 @@ const Marks = () => {
                               </button>
                               <button
                                 onClick={() => handleSave(student)}
-                                disabled={isSaving}
                                 className="p-2 text-primary-400 hover:text-white hover:bg-primary-500 rounded-lg transition-colors"
                                 title="Save"
                               >
@@ -292,7 +298,6 @@ const Marks = () => {
                               )}
                               <button
                                 onClick={() => handleToggleLock(student)}
-                                disabled={isSaving}
                                 className={`p-2 rounded-lg transition-colors ${
                                   isLocked 
                                     ? 'text-danger-400 hover:bg-danger-400/10 hover:text-danger-300' 
@@ -314,6 +319,11 @@ const Marks = () => {
           </table>
         </div>
       </div>
+      <ProcessingModal 
+        isOpen={processing.isOpen}
+        status={processing.status}
+        message={processing.message}
+      />
     </div>
   );
 };

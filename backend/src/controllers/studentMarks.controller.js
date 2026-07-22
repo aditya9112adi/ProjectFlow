@@ -7,22 +7,28 @@ import { ApiError } from '../utils/ApiError.js';
 // Get all student marks
 export const getStudentMarks = async (req, res) => {
   try {
-    const teams = await Team.find({ isActive: true }).populate('members.user');
+    // 1. Fetch ALL students, sorted by PRN
+    const students = await StudentData.find({ role: 'student' }).sort({ prn: 1 });
     
-    // Get all project statuses to know if submissions exist
-    const projects = await Project.find({ team: { $in: teams.map(t => t._id) } });
+    // 2. Fetch all teams (to map team names and projects)
+    const teams = await Team.find({ isActive: true });
+    const teamMap = {};
+    teams.forEach(t => { teamMap[t._id.toString()] = t; });
+
+    // 3. Fetch all projects
+    const projects = await Project.find();
     const projectMap = {};
     projects.forEach(p => { projectMap[p.team.toString()] = p; });
 
-    // Fetch existing StudentMarks
-    const marks = await StudentMarks.find({ team: { $in: teams.map(t => t._id) } });
+    // 4. Fetch existing StudentMarks
+    const marks = await StudentMarks.find();
     const marksMap = {};
     marks.forEach(m => { marksMap[m.student.toString()] = m; });
 
-    const studentData = [];
-
-    teams.forEach(team => {
-      const project = projectMap[team._id.toString()];
+    const studentData = students.map(student => {
+      const teamId = student.team;
+      const team = teamId ? teamMap[teamId.toString()] : null;
+      const project = teamId ? projectMap[teamId.toString()] : null;
       const phases = project?.phases || {};
 
       const proposalSubmitted = !!phases.proposal?.submittedAt;
@@ -30,34 +36,31 @@ export const getStudentMarks = async (req, res) => {
       const prototypeSubmitted = !!phases.prototypePhase?.submittedAt;
       const reportSubmitted = !!phases.report?.submittedAt;
 
-      team.members.forEach(member => {
-        if (!member.user) return; // Skip if user not populated somehow
-        const student = member.user;
-        const sMarks = marksMap[student._id.toString()] || {};
+      const sMarks = marksMap[student._id.toString()] || {};
 
-        studentData.push({
-          studentId: student._id,
-          studentName: student.studentName || `${student.firstName} ${student.lastName}`.trim(),
-          prn: student.prn || student.rollNumber,
-          teamId: team._id,
-          teamName: team.name,
-          marks: {
-            _id: sMarks._id,
-            proposalMarks: sMarks.proposalMarks !== null && sMarks.proposalMarks !== undefined ? sMarks.proposalMarks : '',
-            pptMarks: sMarks.pptMarks !== null && sMarks.pptMarks !== undefined ? sMarks.pptMarks : '',
-            prototypeMarks: sMarks.prototypeMarks !== null && sMarks.prototypeMarks !== undefined ? sMarks.prototypeMarks : '',
-            reportMarks: sMarks.reportMarks !== null && sMarks.reportMarks !== undefined ? sMarks.reportMarks : '',
-            totalMarks: sMarks.totalMarks || 0,
-            isLocked: !!sMarks.isLocked,
-          },
-          status: {
-            proposalSubmitted,
-            pptSubmitted,
-            prototypeSubmitted,
-            reportSubmitted,
-          }
-        });
-      });
+      return {
+        studentId: student._id,
+        studentName: student.studentName || `${student.firstName} ${student.lastName}`.trim(),
+        prn: student.prn || student.rollNumber,
+        teamId: team ? team._id : null,
+        teamName: team ? team.name : 'No Team',
+        marks: {
+          _id: sMarks._id,
+          proposalMarks: sMarks.proposalMarks !== null && sMarks.proposalMarks !== undefined ? sMarks.proposalMarks : '',
+          pptMarks: sMarks.pptMarks !== null && sMarks.pptMarks !== undefined ? sMarks.pptMarks : '',
+          prototypeMarks: sMarks.prototypeMarks !== null && sMarks.prototypeMarks !== undefined ? sMarks.prototypeMarks : '',
+          reportMarks: sMarks.reportMarks !== null && sMarks.reportMarks !== undefined ? sMarks.reportMarks : '',
+          presentationMarks: sMarks.presentationMarks !== null && sMarks.presentationMarks !== undefined ? sMarks.presentationMarks : '',
+          totalMarks: sMarks.totalMarks || 0,
+          isLocked: !!sMarks.isLocked,
+        },
+        status: {
+          proposalSubmitted,
+          pptSubmitted,
+          prototypeSubmitted,
+          reportSubmitted,
+        }
+      };
     });
 
     res.json({
@@ -83,15 +86,17 @@ export const saveStudentMarks = async (req, res) => {
     const savedMarks = [];
     
     for (const update of updates) {
-      const { studentId, teamId, proposalMarks, pptMarks, prototypeMarks, reportMarks, isLocked } = update;
+      const { studentId, teamId, proposalMarks, pptMarks, prototypeMarks, reportMarks, presentationMarks, isLocked } = update;
       
       let marksDoc = await StudentMarks.findOne({ student: studentId });
       
       if (!marksDoc) {
         marksDoc = new StudentMarks({
           student: studentId,
-          team: teamId,
+          team: teamId || null,
         });
+      } else if (teamId && marksDoc.team?.toString() !== teamId.toString()) {
+        marksDoc.team = teamId; // update team if they joined one
       }
 
       // Check if locked and requesting to edit (only admin can lock/unlock, which we assume this is since route is protected)
@@ -103,6 +108,7 @@ export const saveStudentMarks = async (req, res) => {
       if (pptMarks !== undefined && pptMarks !== '') marksDoc.pptMarks = Number(pptMarks);
       if (prototypeMarks !== undefined && prototypeMarks !== '') marksDoc.prototypeMarks = Number(prototypeMarks);
       if (reportMarks !== undefined && reportMarks !== '') marksDoc.reportMarks = Number(reportMarks);
+      if (presentationMarks !== undefined && presentationMarks !== '') marksDoc.presentationMarks = Number(presentationMarks);
       
       if (isLocked !== undefined) {
         marksDoc.isLocked = isLocked;
