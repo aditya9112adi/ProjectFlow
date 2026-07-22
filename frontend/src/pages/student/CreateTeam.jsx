@@ -13,6 +13,19 @@ import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 
 const getWordCount = (str) => (str ? str.trim().split(/\s+/).filter(Boolean).length : 0);
 
+const PROJECT_DOMAINS = [
+  'Artificial Intelligence',
+  'Machine Learning',
+  'Web Development',
+  'Mobile App Development',
+  'IoT',
+  'Cybersecurity',
+  'Data Science',
+  'Cloud Computing',
+  'Blockchain',
+  'Other'
+];
+
 const schema = z.object({
   name: z.string().min(3, 'Team name must be at least 3 characters').max(50),
   projectDomain: z.string().min(2, 'Please enter a project domain').max(100),
@@ -214,12 +227,20 @@ const CreateTeam = () => {
               error={errors.name?.message} 
               {...register('name')} 
             />
-            <Input 
-              label="Project Domain *" 
-              placeholder="e.g. Machine Learning, Web Development, IoT" 
-              error={errors.projectDomain?.message} 
-              {...register('projectDomain')} 
-            />
+            <div className="space-y-1.5">
+              <label className="label">Project Domain *</label>
+              <select
+                className={`input bg-dark-900 border-dark-700 text-white ${errors.projectDomain ? 'border-red-500/50 focus:border-red-500/50' : 'focus:border-primary-500'}`}
+                {...register('projectDomain')}
+                defaultValue=""
+              >
+                <option value="" disabled className="text-dark-400">Choose</option>
+                {PROJECT_DOMAINS.map(domain => (
+                  <option key={domain} value={domain} className="bg-dark-900">{domain}</option>
+                ))}
+              </select>
+              {errors.projectDomain && <p className="text-red-400 text-xs mt-1">{errors.projectDomain.message}</p>}
+            </div>
             <div className="space-y-1.5">
               <div className="flex justify-between">
                 <label className="label">Description *</label>

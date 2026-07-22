@@ -20,6 +20,19 @@ const phasesList = [
   { id: 'report', label: 'Project Report Submission' },
 ];
 
+const PROJECT_DOMAINS = [
+  'Artificial Intelligence',
+  'Machine Learning',
+  'Web Development',
+  'Mobile App Development',
+  'IoT',
+  'Cybersecurity',
+  'Data Science',
+  'Cloud Computing',
+  'Blockchain',
+  'Other'
+];
+
 const phaseLabels = {
   proposal: 'Proposal',
   ppt: 'PPT',
@@ -349,13 +362,21 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
             error={errors.title?.message}
             {...register('title', { required: 'Project Name is required' })}
           />
-          <Input
-            label="Sector / Domain"
-            placeholder="e.g. Agriculture, Healthcare, FinTech"
-            disabled={isLocked}
-            error={errors.domain?.message}
-            {...register('domain', { required: 'Sector is required' })}
-          />
+          <div className="space-y-1.5">
+            <label className="label">Sector / Domain</label>
+            <select
+              className={`input bg-dark-900 border-dark-700 text-white ${errors.domain ? 'border-red-500/50 focus:border-red-500/50' : 'focus:border-primary-500'}`}
+              disabled={isLocked}
+              {...register('domain', { required: 'Sector / Domain is required' })}
+              defaultValue=""
+            >
+              <option value="" disabled className="text-dark-400">Choose</option>
+              {PROJECT_DOMAINS.map(domain => (
+                <option key={domain} value={domain} className="bg-dark-900">{domain}</option>
+              ))}
+            </select>
+            {errors.domain && <p className="text-red-400 text-xs mt-1">{errors.domain.message}</p>}
+          </div>
           <div className="space-y-1.5">
             <div className="flex justify-between">
               <label className="label">Problem Statement</label>
