@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    :root {
+      --color-bg-950: 248 250 252; /* Light */
+      --color-bg-100: 15 23 42;   /* Dark */
+    }
+    .dark {
+      --color-bg-950: 2 6 23;     /* Dark */
+      --color-bg-100: 241 245 249;/* Light */
+    }
+    .bg-dark-950 {
+      background-color: rgb(var(--color-bg-950) / 1);
+    }
+    .text-dark-100 {
+      color: rgb(var(--color-bg-100) / 1);
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-dark-100">
+  <div id="content">This should be dark text on light background.</div>
+  <button onclick="document.documentElement.classList.toggle('dark')">Toggle Theme</button>
+  <script>
+    if (document.documentElement.classList.contains('dark')) {
+      console.log('Dark mode active');
+    }
+  </script>
+</body>
+</html>
