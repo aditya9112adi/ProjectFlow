@@ -125,7 +125,34 @@ const PendingReviews = () => {
           {filteredReviews.map((project) => {
             const activePhase = project.phase || project.currentPhase;
             const phaseData = project.phases?.[activePhase];
-
+            return (
+              <div key={`${project.projectId}-${activePhase}`} className="card p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <Badge variant="warning" className="capitalize">
+                        {activePhase} Phase
+                      </Badge>
+                      <span className="text-dark-500 text-xs flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5" />
+                        Submitted {project.submittedAt ? formatDistanceToNow(new Date(project.submittedAt)) : 'recently'}
+                      </span>
+                    </div>
+                    <h3 className="text-dark-50 text-lg font-bold">{project.projectTitle || project.title}</h3>
+                    <div className="mt-2 space-y-1">
+                      <p className="text-dark-400 text-sm font-semibold">Team: {project.teamName || project.team?.name}</p>
+                      {project.members && project.members.length > 0 && (
+                        <div className="pl-2 border-l-2 border-dark-700 mt-1 space-y-1">
+                          {project.members.map((member) => (
+                            <p key={member.user?._id || Math.random()} className="text-dark-300 text-xs flex items-center gap-1.5">
+                              <span>{member.user?.studentName || `${member.user?.firstName || ''} ${member.user?.lastName || ''}`.trim() || 'Unknown'}</span>
+                              <span className="text-dark-500">({member.user?.prn || member.user?.rollNumber})</span>
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex-shrink-0 flex gap-2">
                     <button onClick={() => handleReviewClick(project, activePhase, 'approved')} className="btn-primary bg-emerald-600 hover:bg-emerald-500 border-emerald-500">
                       Approve
