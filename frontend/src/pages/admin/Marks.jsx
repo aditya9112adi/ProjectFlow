@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Lock, Unlock, Edit2, Save, X } from 'lucide-react';
+import { Search, Download, Lock, Unlock, Edit2, Save, X, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { teamMarksService } from '../../services/teamMarks.service.js';
 import toast from 'react-hot-toast';
 import Input from '../../components/ui/Input.jsx';
@@ -62,6 +63,25 @@ const Marks = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleDownloadExcel = () => {
+    const data = students.map(s => ({
+      'Student Name': s.studentName,
+      'PRN': s.prn,
+      'Team Name': s.teamName || 'No Team',
+      'Proposal': s.marks.proposalMarks || 0,
+      'PPT': s.marks.pptMarks || 0,
+      'Prototype': s.marks.prototypeMarks || 0,
+      'Report': s.marks.reportMarks || 0,
+      'Presentation': s.marks.presentationMarks || 0,
+      'Total': s.marks.totalMarks || 0
+    }));
+    
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Marks");
+    XLSX.writeFile(workbook, "student_marks.xlsx");
   };
 
   const startEditing = (student) => {
@@ -159,9 +179,14 @@ const Marks = () => {
           <h1 className="text-2xl font-bold text-white">Student Marks Dashboard</h1>
           <p className="text-dark-400 text-sm mt-1">Manage individual evaluations and scores for all students.</p>
         </div>
-        <Button onClick={handleDownloadSheet} icon={Download}>
-          Download Sheet
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button onClick={handleDownloadSheet} icon={Download} variant="outline" className="text-sm">
+            CSV
+          </Button>
+          <Button onClick={handleDownloadExcel} icon={FileSpreadsheet} className="text-sm">
+            Excel
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
