@@ -255,6 +255,24 @@ export const StatusTab = ({ progressData, fetchProgress, isLoading }) => {
                               </button>
                             )}
                           </div>
+                          
+                          {/* Members List */}
+                          <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {team.members.map((member, idx) => (
+                              <div key={idx} className="bg-dark-900 border border-dark-700 p-3 rounded-lg flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary-600/20 text-primary-400 flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
+                                  {member.user?.firstName?.charAt(0)}{member.user?.lastName?.charAt(0)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-dark-100 text-sm font-medium truncate">
+                                    {member.user?.firstName} {member.user?.lastName}
+                                  </p>
+                                  <p className="text-dark-400 text-xs truncate capitalize">{member.role}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
                           {!team.project ? (
                             <div className="flex flex-col items-center justify-center py-4">
                               <p className="text-dark-400 text-sm">No project data found for this team.</p>
