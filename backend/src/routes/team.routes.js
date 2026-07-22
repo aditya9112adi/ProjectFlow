@@ -8,7 +8,14 @@ router.use(verifyJWT);
 
 // Student routes
 router.post('/create', authorizeRoles('student'), teamController.createTeam);
-router.get('/lookup/:rollNumber', authorizeRoles('student'), teamController.lookupStudent);
+router.get('/lookup/:rollNumber', teamController.lookupStudent);
+
+// Invitation routes
+router.post('/invitations', teamController.sendInvitation);
+router.get('/invitations', teamController.getMyInvitations);
+router.put('/invitations/:invitationId/respond', teamController.respondToInvitation);
+
+// Team lifecycle routes
 router.get('/my-team', authorizeRoles('student'), teamController.getMyTeam);
 router.post('/:teamId/members', authorizeRoles('student'), teamController.addMember);
 router.delete('/:teamId/members/:memberId', authorizeRoles('student'), teamController.removeMember);

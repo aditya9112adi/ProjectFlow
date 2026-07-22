@@ -19,6 +19,13 @@ const phasesList = [
   { id: 'report', label: 'Project Report Submission' },
 ];
 
+const phaseLabels = {
+  proposal: 'Proposal',
+  ppt: 'PPT',
+  prototype: 'Prototype',
+  report: 'Project Report'
+};
+
 const Progress = () => {
   const { user } = useAuth();
   const [project, setProject] = useState(null);
@@ -241,7 +248,18 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
   };
 
   const isLocked = isApproved || isSubmitted;
-  const showForm = !isApproved && !isSubmitted;
+  const showForm = (!isApproved && !isSubmitted) && isLeader;
+
+  if (!isLeader && !isApproved && !isSubmitted) {
+    return (
+      <div className="space-y-4 bg-dark-800/30 p-5 rounded-xl border border-dark-700 mt-4 text-center">
+        <Lock className="w-8 h-8 text-dark-600 mx-auto mb-2" />
+        <p className="text-dark-300 text-sm">
+          Pending submission by your Team Leader. Only the Team Leader can submit the {phaseLabels[phase] || phase}.
+        </p>
+      </div>
+    );
+  }
 
   if (!showForm) {
     return (

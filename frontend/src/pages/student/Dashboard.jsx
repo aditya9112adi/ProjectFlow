@@ -14,21 +14,23 @@ const phaseLabels = { proposal: 'Proposal', ppt: 'PPT', report: 'Report', protot
 
 const StudentDashboard = () => {
   const { user } = useAuth();
-  const [data, setData] = useState({ team: null, project: null, notifications: [] });
+  const [data, setData] = useState({ team: null, project: null, notifications: [], invitations: [] });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [teamRes, projectRes, notifRes] = await Promise.allSettled([
+        const [teamRes, projectRes, notifRes, invitesRes] = await Promise.allSettled([
           teamService.getMyTeam(),
           projectService.getMyProject(),
           notificationService.getNotifications({ limit: 5 }),
+          teamService.getMyInvitations()
         ]);
         setData({
           team: teamRes.status === 'fulfilled' ? teamRes.value.data.data : null,
           project: projectRes.status === 'fulfilled' ? projectRes.value.data.data : null,
           notifications: notifRes.status === 'fulfilled' ? notifRes.value.data.data.notifications : [],
+          invitations: invitesRes.status === 'fulfilled' ? (invitesRes.value.data.data.incoming || []) : [],
         });
       } finally {
         setIsLoading(false);
@@ -37,7 +39,7 @@ const StudentDashboard = () => {
     fetchAll();
   }, []);
 
-  const { team, project, notifications } = data;
+  const { team, project, notifications, invitations } = data;
   const currentPhase = project?.currentPhase || 'proposal';
   const progress = project?.progress || 0;
 
@@ -45,8 +47,47 @@ const StudentDashboard = () => {
   const phaseStatusVariant = { approved: 'success', submitted: 'warning', rejected: 'error', not_started: 'info', under_review: 'info' };
   const proposalRejections = project?.phases?.proposal?.reviews?.filter(r => r.action === 'rejected').length || 0;
 
+  const handleInvitationResponse = async (invitationId, action) => {
+    try {
+      await teamService.respondToInvitation(invitationId, action);
+      if (action === 'accept') {
+        window.location.reload(); // Reload to fetch the new team data
+      } else {
+        setData(prev => ({
+          ...prev,
+          invitations: prev.invitations.filter(inv => inv._id !== invitationId)
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      {/* Pending Invitations Alert */}
+      {!team && invitations.length > 0 && (
+        <div className="space-y-4 mb-8">
+          <h3 className="text-dark-100 font-bold text-lg">Team Invitations</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {invitations.map(inv => (
+              <div key={inv._id} className="p-5 rounded-2xl bg-dark-800/80 border border-primary-500/30 flex justify-between items-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-2xl"></div>
+                <div className="relative z-10">
+                  <p className="text-white font-semibold">{inv.teamName}</p>
+                  <p className="text-dark-400 text-sm mt-1">Invited by: {inv.leader?.firstName} {inv.leader?.lastName}</p>
+                  {inv.projectDomain && <Badge variant="info" className="mt-2 text-[10px]">{inv.projectDomain}</Badge>}
+                </div>
+                <div className="relative z-10 flex gap-2">
+                  <button onClick={() => handleInvitationResponse(inv._id, 'accept')} className="btn-primary text-xs py-1.5 px-3">Join Team</button>
+                  <button onClick={() => handleInvitationResponse(inv._id, 'reject')} className="bg-dark-700 hover:bg-dark-600 text-dark-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">Decline</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Welcome banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-900/60 via-dark-900 to-accent-900/40 border border-primary-800/30 p-6 md:p-8">
         <div className="absolute top-0 right-0 w-64 h-64 opacity-10" style={{

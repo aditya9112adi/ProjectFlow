@@ -15,4 +15,7 @@ export const teamService = {
   approveEditAccess: (teamId) => api.post(`/teams/${teamId}/approve-edit`),
   lockTeam: (teamId) => api.post(`/teams/${teamId}/lock`),
   adminLockTeam: (teamId) => api.post(`/teams/${teamId}/admin-lock`),
+  sendInvitation: (data) => api.post('/teams/invitations', data),
+  getMyInvitations: () => api.get('/teams/invitations'),
+  respondToInvitation: (invitationId, action) => api.put(`/teams/invitations/${invitationId}/respond`, { action }),
 };

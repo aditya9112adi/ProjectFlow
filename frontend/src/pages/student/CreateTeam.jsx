@@ -23,7 +23,7 @@ const schema = z.object({
   member3: z.string().optional(),
 });
 
-const MemberInput = ({ label, name, placeholder, register, error, watch }) => {
+const MemberInput = ({ label, name, placeholder, register, error, watch, onSendInvite, invitationStatus }) => {
   const [studentName, setStudentName] = useState('');
   const [isLooking, setIsLooking] = useState(false);
   const prnValue = watch(name);
@@ -59,13 +59,37 @@ const MemberInput = ({ label, name, placeholder, register, error, watch }) => {
         {...register(name)} 
       />
       {(prnValue && prnValue.length >= 5) && (
-        <div className="pl-4 border-l-2 border-dark-600">
-          <Input
-            label="Verified Student Name"
-            value={isLooking ? 'Searching...' : studentName}
-            disabled
-            className={`bg-dark-900 ${studentName === 'Student not found' ? 'text-red-400 border-red-500/30 font-semibold' : 'text-emerald-400 border-emerald-500/30 font-semibold'}`}
-          />
+        <div className="pl-4 border-l-2 border-dark-600 flex flex-col md:flex-row gap-3">
+          <div className="flex-1">
+            <Input
+              label="Verified Student Name"
+              value={isLooking ? 'Searching...' : studentName}
+              disabled
+              className={`bg-dark-900 ${studentName === 'Student not found' ? 'text-red-400 border-red-500/30 font-semibold' : 'text-emerald-400 border-emerald-500/30 font-semibold'}`}
+            />
+          </div>
+          {studentName && studentName !== 'Student not found' && (
+            <div className="flex items-end pb-1">
+              {invitationStatus === 'accepted' ? (
+                <div className="px-4 py-2.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-sm flex items-center gap-2 h-[42px]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Accepted
+                </div>
+              ) : invitationStatus === 'pending' ? (
+                <div className="px-4 py-2.5 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold text-sm flex items-center gap-2 h-[42px]">
+                  <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span> Pending
+                </div>
+              ) : (
+                <Button 
+                  type="button" 
+                  onClick={() => onSendInvite(prnValue)}
+                  className="h-[42px]"
+                  variant="secondary"
+                >
+                  Send Invite
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -77,10 +101,53 @@ const CreateTeam = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors, isValid } } = useForm({
+  const { register, handleSubmit, watch, getValues, trigger, formState: { errors, isValid } } = useForm({
     resolver: zodResolver(schema),
     mode: 'onChange',
   });
+
+  const [invitations, setInvitations] = useState([]);
+
+  const fetchInvitations = async () => {
+    try {
+      const res = await teamService.getMyInvitations();
+      setInvitations(res.data.data.outgoing || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchInvitations();
+    // Poll for status updates every 5 seconds
+    const interval = setInterval(fetchInvitations, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getInvitationStatus = (prn) => {
+    if (!prn) return null;
+    const formattedPrn = prn.includes('@') ? prn : `${prn}@sguk.ac.in`;
+    const invite = invitations.find(i => i.invitee?.prn === formattedPrn);
+    return invite ? invite.status : null;
+  };
+
+  const handleSendInvite = async (prn) => {
+    const isValidFields = await trigger(['name', 'projectDomain', 'description']);
+    if (!isValidFields) {
+      toast.error('Please fill in Team Name, Domain, and Description first.');
+      return;
+    }
+    
+    const { name, projectDomain, description } = getValues();
+    
+    try {
+      await teamService.sendInvitation({ rollNumber: prn, teamName: name, projectDomain, description });
+      toast.success(`Invitation sent to ${prn}`);
+      fetchInvitations();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to send invitation');
+    }
+  };
 
   const descriptionText = watch('description') || '';
   const descriptionWords = getWordCount(descriptionText);
@@ -175,6 +242,8 @@ const CreateTeam = () => {
               error={errors.member1?.message} 
               register={register}
               watch={watch}
+              onSendInvite={handleSendInvite}
+              invitationStatus={getInvitationStatus(watch('member1'))}
             />
             
             <MemberInput 
@@ -184,6 +253,8 @@ const CreateTeam = () => {
               error={errors.member2?.message} 
               register={register}
               watch={watch}
+              onSendInvite={handleSendInvite}
+              invitationStatus={getInvitationStatus(watch('member2'))}
             />
             
             <MemberInput 
@@ -193,21 +264,44 @@ const CreateTeam = () => {
               error={errors.member3?.message} 
               register={register}
               watch={watch}
+              onSendInvite={handleSendInvite}
+              invitationStatus={getInvitationStatus(watch('member3'))}
             />
           </div>
 
-          <div className="pt-4">
-            <Button 
-              type="submit" 
-              className={`w-full transition-all duration-300 ${!isValid ? 'opacity-50 blur-[1px] pointer-events-none' : ''}`} 
-              size="lg" 
-              isLoading={isSubmitting} 
-              icon={Users}
-              disabled={!isValid || isSubmitting}
-            >
-              {isSubmitting ? 'Creating Team...' : 'Create Team'}
-            </Button>
-          </div>
+          {/* Calculate if all entered members have accepted */}
+          {(() => {
+            const m1 = watch('member1');
+            const m2 = watch('member2');
+            const m3 = watch('member3');
+            
+            const isM1Accepted = m1 && getInvitationStatus(m1) === 'accepted';
+            const isM2Accepted = m2 && getInvitationStatus(m2) === 'accepted';
+            const isM3Accepted = !m3 || (m3 && getInvitationStatus(m3) === 'accepted'); // Optional
+            
+            const allAccepted = isM1Accepted && isM2Accepted && isM3Accepted;
+            const canSubmit = isValid && allAccepted;
+
+            return (
+              <div className="pt-4">
+                {!allAccepted && (
+                  <p className="text-orange-400 text-sm mb-4 bg-orange-500/10 p-3 rounded-lg border border-orange-500/20">
+                    You must send invitations to all team members and wait for them to accept before you can create the team.
+                  </p>
+                )}
+                <Button 
+                  type="submit" 
+                  className={`w-full transition-all duration-300 ${!canSubmit ? 'opacity-50 blur-[1px] pointer-events-none' : ''}`} 
+                  size="lg" 
+                  isLoading={isSubmitting} 
+                  icon={Users}
+                  disabled={!canSubmit || isSubmitting}
+                >
+                  {isSubmitting ? 'Creating Team...' : 'Create Team'}
+                </Button>
+              </div>
+            );
+          })()}
         </form>
       </div>
     </div>
