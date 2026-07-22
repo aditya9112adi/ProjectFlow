@@ -171,14 +171,6 @@ const Team = () => {
             {team.projectDomain && (
               <p className="text-dark-400 text-sm mt-1">🎯 {team.projectDomain}</p>
             )}
-            <div className="flex flex-wrap items-center gap-2 mt-3">
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-dark-800 border border-dark-700">
-                <Hash className="w-3 h-3 text-primary-400" />
-                <span className="text-dark-300 text-xs font-mono font-semibold">{team.teamCode}</span>
-              </div>
-              {team.department && <Badge variant="info">{team.department}</Badge>}
-              {team.academicYear && <Badge variant="success">{team.academicYear}</Badge>}
-            </div>
           </div>
           <div className="text-right">
             <p className="text-dark-400 text-xs font-semibold uppercase tracking-wider">Members</p>
