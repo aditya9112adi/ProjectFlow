@@ -11,6 +11,7 @@ import LoadingSkeleton from '../../components/ui/LoadingSkeleton.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Input from '../../components/ui/Input.jsx';
+import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 
 const phasesList = [
   { id: 'proposal', label: 'Proposal Submission' },
@@ -32,6 +33,7 @@ const Progress = () => {
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activePhase, setActivePhase] = useState('proposal');
+  const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
 
   useEffect(() => {
     fetchData();
@@ -181,6 +183,7 @@ const Progress = () => {
                     onUpdate={fetchData} 
                     isApproved={isApproved}
                     isSubmitted={isSubmitted}
+                    setProcessing={setProcessing}
                   />
                 )}
               </div>
@@ -188,11 +191,17 @@ const Progress = () => {
           );
         })}
       </div>
+      
+      <ProcessingModal 
+        isOpen={processing.isOpen}
+        status={processing.status}
+        message={processing.message}
+      />
     </div>
   );
 };
 
-const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted }) => {
+const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted, setProcessing }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState(null);
 
@@ -221,6 +230,8 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
     if (!isLeader) return toast.error('Only team leader can submit');
 
     setIsSubmitting(true);
+    setProcessing({ isOpen: true, status: 'loading', message: 'Submitting your request...' });
+    
     try {
       const formData = new FormData();
       if (phase === 'proposal') {
@@ -238,10 +249,12 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
       }
 
       await projectService.submitPhase(project?._id, phase, formData);
-      toast.success(`${phase} submitted successfully`);
+      setProcessing({ isOpen: true, status: 'success', message: `${phaseLabels[phase]} submitted successfully!` });
       onUpdate();
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2500);
     } catch (err) {
-      toast.error(err.response?.data?.message || `Failed to submit ${phase}`);
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || `Failed to submit ${phaseLabels[phase]}` });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     } finally {
       setIsSubmitting(false);
     }
