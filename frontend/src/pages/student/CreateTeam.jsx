@@ -161,7 +161,7 @@ const CreateTeam = () => {
   const handleSendInvite = async (prn) => {
     const isValidFields = await trigger(['name', 'projectDomain', 'description']);
     if (!isValidFields) {
-      toast.error('Please fill in Team Name, Domain, and Description first.');
+      toast.error('Please fill in your Team Name, Domain, and Description above before sending invites!');
       return;
     }
     
@@ -174,7 +174,9 @@ const CreateTeam = () => {
       fetchInvitations();
       setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to send invitation' });
+      console.error('Send invite error:', err);
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to send invitation';
+      setProcessing({ isOpen: true, status: 'error', message: errorMsg });
       setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     }
   };
