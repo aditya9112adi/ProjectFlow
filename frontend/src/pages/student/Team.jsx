@@ -9,6 +9,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import LoadingSkeleton from '../../components/ui/LoadingSkeleton.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Modal from '../../components/ui/Modal.jsx';
+import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 
 const Team = () => {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ const Team = () => {
   const [isLooking, setIsLooking] = useState(false);
   const [isRequestingEdit, setIsRequestingEdit] = useState(false);
   const [isLocking, setIsLocking] = useState(false);
+  const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
 
   useEffect(() => {
     fetchTeam();
@@ -55,15 +57,18 @@ const Team = () => {
   const handleAddMember = async () => {
     if (!lookupResult || !team) return;
     setIsAdding(true);
+    setProcessing({ isOpen: true, status: 'loading', message: `Adding ${lookupResult.firstName}...` });
     try {
       const res = await teamService.addMember(team._id, rollNumberInput.trim());
       setTeam(res.data.data);
       setShowAddModal(false);
       setRollNumberInput('');
       setLookupResult(null);
-      toast.success('Member added successfully!');
+      setProcessing({ isOpen: true, status: 'success', message: 'Member added successfully!' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to add member');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to add member' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     } finally {
       setIsAdding(false);
     }
@@ -71,12 +76,16 @@ const Team = () => {
 
   const handleRemoveMember = async (memberId, memberName) => {
     if (!confirm(`Remove ${memberName} from the team?`)) return;
+    
+    setProcessing({ isOpen: true, status: 'loading', message: `Removing ${memberName}...` });
     try {
       const res = await teamService.removeMember(team._id, memberId);
       setTeam(res.data.data);
-      toast.success('Member removed');
+      setProcessing({ isOpen: true, status: 'success', message: 'Member removed successfully' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to remove member');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to remove member' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     }
   };
 
@@ -86,12 +95,15 @@ const Team = () => {
 
   const handleRequestEdit = async () => {
     setIsRequestingEdit(true);
+    setProcessing({ isOpen: true, status: 'loading', message: 'Requesting edit access...' });
     try {
       const res = await teamService.requestEditAccess(team._id);
       setTeam(res.data.data);
-      toast.success('Edit request sent to instructor');
+      setProcessing({ isOpen: true, status: 'success', message: 'Edit request sent to instructor!' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to request edit access');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to request edit access' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     } finally {
       setIsRequestingEdit(false);
     }
@@ -99,12 +111,15 @@ const Team = () => {
 
   const handleLockTeam = async () => {
     setIsLocking(true);
+    setProcessing({ isOpen: true, status: 'loading', message: 'Locking team...' });
     try {
       const res = await teamService.lockTeam(team._id);
       setTeam(res.data.data);
-      toast.success('Team locked successfully');
+      setProcessing({ isOpen: true, status: 'success', message: 'Team locked successfully!' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to lock team');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to lock team' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     } finally {
       setIsLocking(false);
     }
@@ -302,6 +317,12 @@ const Team = () => {
           )}
         </div>
       </Modal>
+
+      <ProcessingModal 
+        isOpen={processing.isOpen}
+        status={processing.status}
+        message={processing.message}
+      />
     </div>
   );
 };

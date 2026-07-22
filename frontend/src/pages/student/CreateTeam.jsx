@@ -9,6 +9,7 @@ import { teamService } from '../../services/team.service.js';
 import Button from '../../components/ui/Button.jsx';
 import Input from '../../components/ui/Input.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 
 const getWordCount = (str) => (str ? str.trim().split(/\s+/).filter(Boolean).length : 0);
 
@@ -104,6 +105,7 @@ const CreateTeam = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
 
   const { register, handleSubmit, watch, getValues, trigger, formState: { errors, isValid } } = useForm({
     resolver: zodResolver(schema),
@@ -144,12 +146,15 @@ const CreateTeam = () => {
     
     const { name, projectDomain, description } = getValues();
     
+    setProcessing({ isOpen: true, status: 'loading', message: `Sending invitation to ${prn}...` });
     try {
       await teamService.sendInvitation({ rollNumber: prn, teamName: name, projectDomain, description });
-      toast.success(`Invitation sent to ${prn}`);
+      setProcessing({ isOpen: true, status: 'success', message: `Invitation sent to ${prn}!` });
       fetchInvitations();
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to send invitation');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to send invitation' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     }
   };
 
@@ -158,6 +163,7 @@ const CreateTeam = () => {
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
+    setProcessing({ isOpen: true, status: 'loading', message: 'Creating your team...' });
     try {
       // Gather roll numbers
       const memberRollNumbers = [data.member1, data.member2];
@@ -172,10 +178,14 @@ const CreateTeam = () => {
         memberRollNumbers,
       });
       
-      toast.success('Team created successfully! 🎉');
-      navigate('/student/team');
+      setProcessing({ isOpen: true, status: 'success', message: 'Team created successfully! 🎉' });
+      setTimeout(() => {
+        setProcessing(prev => ({ ...prev, isOpen: false }));
+        navigate('/student/team');
+      }, 1500);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create team');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'Failed to create team' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
     } finally {
       setIsSubmitting(false);
     }
@@ -308,6 +318,12 @@ const CreateTeam = () => {
           })()}
         </form>
       </div>
+
+      <ProcessingModal 
+        isOpen={processing.isOpen}
+        status={processing.status}
+        message={processing.message}
+      />
     </div>
   );
 };

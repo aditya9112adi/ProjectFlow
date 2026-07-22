@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { projectService } from '../../services/project.service.js';
 import { teamService } from '../../services/team.service.js';
 import { notificationService } from '../../services/notification.service.js';
+import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 import StatCard from '../../components/ui/StatCard.jsx';
 import { StatCardSkeleton } from '../../components/ui/LoadingSkeleton.jsx';
 import Badge from '../../components/ui/Badge.jsx';
@@ -17,6 +18,7 @@ const phaseLabels = { proposal: 'Proposal', ppt: 'PPT', report: 'Report', protot
 const StudentDashboard = () => {
   const { user } = useAuth();
   const [data, setData] = useState({ team: null, project: null, notifications: [], invitations: [] });
+  const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -50,18 +52,26 @@ const StudentDashboard = () => {
   const proposalRejections = project?.phases?.proposal?.reviews?.filter(r => r.action === 'rejected').length || 0;
 
   const handleInvitationResponse = async (invitationId, action) => {
+    setProcessing({ isOpen: true, status: 'loading', message: action === 'accept' ? 'Joining team...' : 'Declining invitation...' });
     try {
       await teamService.respondToInvitation(invitationId, action);
-      if (action === 'accept') {
-        window.location.reload(); // Reload to fetch the new team data
-      } else {
-        setData(prev => ({
-          ...prev,
-          invitations: prev.invitations.filter(inv => inv._id !== invitationId)
-        }));
-      }
+      
+      setProcessing({ isOpen: true, status: 'success', message: action === 'accept' ? 'Successfully joined the team!' : 'Invitation declined' });
+      
+      setTimeout(() => {
+        if (action === 'accept') {
+          window.location.reload(); // Reload to fetch the new team data
+        } else {
+          setData(prev => ({
+            ...prev,
+            invitations: prev.invitations.filter(inv => inv._id !== invitationId)
+          }));
+          setProcessing(prev => ({ ...prev, isOpen: false }));
+        }
+      }, 1500);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'An error occurred while responding');
+      setProcessing({ isOpen: true, status: 'error', message: err.response?.data?.message || 'An error occurred while responding' });
+      setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 3000);
       console.error(err);
     }
   };
@@ -229,6 +239,11 @@ const StudentDashboard = () => {
           )}
         </div>
       </div>
+      <ProcessingModal 
+        isOpen={processing.isOpen}
+        status={processing.status}
+        message={processing.message}
+      />
     </div>
   );
 };
