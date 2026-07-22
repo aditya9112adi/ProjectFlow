@@ -222,7 +222,6 @@ const Marks = () => {
                 filteredStudents.map((student) => {
                   const isEditing = !!editingRows[student.studentId];
                   const editData = editingRows[student.studentId] || {};
-                  const isSaving = savingRows[student.studentId];
                   const isLocked = student.marks.isLocked;
 
                   return (
