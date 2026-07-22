@@ -8,8 +8,12 @@ export const getTeamsProgress = async (req, res) => {
   try {
     const teams = await Team.find({ isActive: true }).populate('members.user');
     
-    // We need to fetch projects for these teams
-    const projects = await Project.find({ team: { $in: teams.map(t => t._id) } });
+    // We need to fetch projects for these teams and populate submission references
+    const projects = await Project.find({ team: { $in: teams.map(t => t._id) } })
+      .populate('proposalId')
+      .populate('pptId')
+      .populate('prototypeId')
+      .populate('reportId');
     const projectMap = {};
     projects.forEach(p => { projectMap[p.team.toString()] = p; });
 
@@ -64,6 +68,7 @@ export const getTeamsProgress = async (req, res) => {
         prototype: prototypeSubmitted,
         report: reportSubmitted,
         currentStage: currentStageStr,
+        project: project, // Include the populated project for the UI
       };
     });
 
