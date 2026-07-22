@@ -146,10 +146,15 @@ const CreateTeam = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const getInvitationStatus = (prn) => {
-    if (!prn) return null;
-    const formattedPrn = prn.includes('@') ? prn : `${prn}@sguk.ac.in`;
-    const invite = invitations.find(i => i.invitee?.prn === formattedPrn);
+  const getInvitationStatus = (prnSuffix) => {
+    if (!prnSuffix) return null;
+    const fullPrn = `252921${prnSuffix}`;
+    const formattedPrn = `${fullPrn}@sguk.ac.in`;
+    const invite = invitations.find(i => 
+      i.invitee?.prn === formattedPrn || 
+      i.invitee?.email === formattedPrn ||
+      i.invitee?.rollNumber === fullPrn
+    );
     return invite ? invite.status : null;
   };
 
