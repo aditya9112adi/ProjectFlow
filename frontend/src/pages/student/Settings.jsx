@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Eye, EyeOff, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api.js';
-import { useTheme } from '../../context/ThemeContext.jsx';
 
 const Settings = () => {
-  const { isDark, toggleTheme } = useTheme();
+  const [isDark, setIsDark] = useState(true);
+  const toggleTheme = () => setIsDark(!isDark);
+  
   const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' });
   const [showPwd, setShowPwd] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
