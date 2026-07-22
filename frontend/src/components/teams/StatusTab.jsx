@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Users, Search, CheckCircle, Clock, FileText, MonitorPlay, CheckSquare, Download } from 'lucide-react';
+import { Users, Search, CheckCircle, Clock, FileText, MonitorPlay, CheckSquare, Download, Link as LinkIcon } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 export const StatusTab = ({ progressData, isLoading }) => {
@@ -8,6 +8,7 @@ export const StatusTab = ({ progressData, isLoading }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
+  const [expandedTeamId, setExpandedTeamId] = useState(null);
 
   const stats = progressData?.stats || {};
   const teams = progressData?.teams || [];
@@ -192,19 +193,104 @@ export const StatusTab = ({ progressData, isLoading }) => {
                 </tr>
               ) : (
                 currentData.map(team => (
-                  <tr key={team._id} className="hover:bg-dark-800/50 transition-colors">
-                    <td className="p-4 font-medium text-white">{team.name}</td>
-                    <td className="p-4 text-dark-300 text-sm">{team.members.length} Members</td>
-                    <td className="p-4 text-center">{team.proposal ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
-                    <td className="p-4 text-center">{team.ppt ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
-                    <td className="p-4 text-center">{team.prototype ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
-                    <td className="p-4 text-center">{team.report ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
-                    <td className="p-4 text-right">
-                      <span className="px-2 py-1 rounded text-[10px] font-semibold bg-dark-800 border border-dark-700 text-dark-300">
-                        {team.currentStage}
-                      </span>
-                    </td>
-                  </tr>
+                  <React.Fragment key={team._id}>
+                    <tr 
+                      className="hover:bg-dark-800/50 transition-colors cursor-pointer"
+                      onClick={() => setExpandedTeamId(expandedTeamId === team._id ? null : team._id)}
+                    >
+                      <td className="p-4 font-medium text-white flex items-center gap-2">
+                        <div className={`transform transition-transform ${expandedTeamId === team._id ? 'rotate-180' : ''}`}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-dark-400"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        {team.name}
+                      </td>
+                      <td className="p-4 text-dark-300 text-sm">{team.members.length} Members</td>
+                      <td className="p-4 text-center">{team.proposal ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
+                      <td className="p-4 text-center">{team.ppt ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
+                      <td className="p-4 text-center">{team.prototype ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
+                      <td className="p-4 text-center">{team.report ? <span className="text-emerald-500">✓</span> : <span className="text-dark-500">✗</span>}</td>
+                      <td className="p-4 text-right">
+                        <span className="px-2 py-1 rounded text-[10px] font-semibold bg-dark-800 border border-dark-700 text-dark-300">
+                          {team.currentStage}
+                        </span>
+                      </td>
+                    </tr>
+                    {expandedTeamId === team._id && (
+                      <tr className="bg-dark-800/30 border-b border-dark-800">
+                        <td colSpan="7" className="p-6">
+                          {!team.project ? (
+                            <div className="flex flex-col items-center justify-center py-4">
+                              <p className="text-dark-400 text-sm">No project data found for this team.</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {/* Proposal Data */}
+                              {team.project.proposalId && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-dark-900 border border-dark-700 p-5 rounded-xl">
+                                  <div>
+                                    <h4 className="text-dark-400 text-xs font-semibold uppercase tracking-wider mb-2">Problem Statement</h4>
+                                    <p className="text-dark-200 text-sm leading-relaxed">{team.project.proposalId.problemStatement}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-dark-400 text-xs font-semibold uppercase tracking-wider mb-2">Proposed Solution</h4>
+                                    <p className="text-dark-200 text-sm leading-relaxed">{team.project.proposalId.solution}</p>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* PPT Submission */}
+                              {team.project.pptId && (
+                                <div className="bg-dark-900 border border-dark-700 p-4 rounded-xl">
+                                  <h4 className="text-dark-400 text-xs font-semibold uppercase tracking-wider mb-3">PPT Submission</h4>
+                                  <a href={team.project.pptId.driveLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-dark-800 border border-dark-700 hover:border-primary-500/50 transition-colors">
+                                    <div className="w-10 h-10 rounded-lg bg-dark-900 flex flex-shrink-0 items-center justify-center"><LinkIcon className="w-5 h-5 text-primary-400" /></div>
+                                    <div className="overflow-hidden"><p className="text-dark-100 font-medium truncate">Google Drive Presentation</p><p className="text-dark-400 text-xs mt-0.5 truncate">{team.project.pptId.driveLink}</p></div>
+                                  </a>
+                                </div>
+                              )}
+
+                              {/* Prototype Submission */}
+                              {team.project.prototypeId && (
+                                <div className="bg-dark-900 border border-dark-700 p-4 rounded-xl">
+                                  <h4 className="text-dark-400 text-xs font-semibold uppercase tracking-wider mb-3">Prototype Submission</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {team.project.prototypeId.githubRepo && (
+                                      <a href={team.project.prototypeId.githubRepo} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-dark-800 border border-dark-700 hover:border-primary-500/50 transition-colors">
+                                        <div className="w-10 h-10 rounded-lg bg-dark-900 flex flex-shrink-0 items-center justify-center"><LinkIcon className="w-5 h-5 text-primary-400" /></div>
+                                        <div className="overflow-hidden"><p className="text-dark-100 font-medium truncate">Repository URL</p><p className="text-dark-400 text-xs mt-0.5 truncate">{team.project.prototypeId.githubRepo}</p></div>
+                                      </a>
+                                    )}
+                                    {team.project.prototypeId.liveUrl && (
+                                      <a href={team.project.prototypeId.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-dark-800 border border-dark-700 hover:border-primary-500/50 transition-colors">
+                                        <div className="w-10 h-10 rounded-lg bg-dark-900 flex flex-shrink-0 items-center justify-center"><LinkIcon className="w-5 h-5 text-accent-400" /></div>
+                                        <div className="overflow-hidden"><p className="text-dark-100 font-medium truncate">Live Demo URL</p><p className="text-dark-400 text-xs mt-0.5 truncate">{team.project.prototypeId.liveUrl}</p></div>
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Report Submission */}
+                              {team.project.reportId && (
+                                <div className="bg-dark-900 border border-dark-700 p-4 rounded-xl">
+                                  <h4 className="text-dark-400 text-xs font-semibold uppercase tracking-wider mb-3">Report Submission</h4>
+                                  <a href={team.project.reportId.driveLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-dark-800 border border-dark-700 hover:border-primary-500/50 transition-colors">
+                                    <div className="w-10 h-10 rounded-lg bg-dark-900 flex flex-shrink-0 items-center justify-center"><LinkIcon className="w-5 h-5 text-primary-400" /></div>
+                                    <div className="overflow-hidden"><p className="text-dark-100 font-medium truncate">Google Drive Report</p><p className="text-dark-400 text-xs mt-0.5 truncate">{team.project.reportId.driveLink}</p></div>
+                                  </a>
+                                </div>
+                              )}
+                              
+                              {/* Empty State */}
+                              {!team.project.proposalId && !team.project.pptId && !team.project.prototypeId && !team.project.reportId && (
+                                <p className="text-dark-400 text-sm text-center">No submissions have been made yet.</p>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))
               )}
             </tbody>
