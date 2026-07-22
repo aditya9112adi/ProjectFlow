@@ -50,7 +50,9 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   });
   
   if (!invitee) throw new ApiError(404, 'Student not found');
-  if (invitee._id.toString() === req.user._id.toString()) throw new ApiError(400, 'Cannot invite yourself');
+  if (invitee._id.toString() === req.user._id.toString()) {
+    throw new ApiError(400, `You are logged in as ${req.user.prn}. You cannot invite yourself.`);
+  }
 
   // Check if they already have a team
   const existingTeam = await teamService.getTeamByUser(invitee._id).catch(() => null);
