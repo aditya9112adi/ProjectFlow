@@ -77,8 +77,9 @@ const CreateTeam = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, formState: { errors, isValid } } = useForm({
     resolver: zodResolver(schema),
+    mode: 'onChange',
   });
 
   const descriptionText = watch('description') || '';
@@ -198,11 +199,11 @@ const CreateTeam = () => {
           <div className="pt-4">
             <Button 
               type="submit" 
-              className={`w-full transition-all duration-300 ${descriptionWords < 50 ? 'opacity-50 blur-[1px] pointer-events-none' : ''}`} 
+              className={`w-full transition-all duration-300 ${!isValid ? 'opacity-50 blur-[1px] pointer-events-none' : ''}`} 
               size="lg" 
               isLoading={isSubmitting} 
               icon={Users}
-              disabled={descriptionWords < 50 || isSubmitting}
+              disabled={!isValid || isSubmitting}
             >
               {isSubmitting ? 'Creating Team...' : 'Create Team'}
             </Button>
