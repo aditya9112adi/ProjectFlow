@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { verifyJWT, authorizeRoles } from '../middleware/auth.middleware.js';
 import * as teamController from '../controllers/team.controller.js';
+import * as teamMarksController from '../controllers/teamMarks.controller.js';
 
 const router = Router();
 router.use(verifyJWT);
@@ -15,7 +16,12 @@ router.delete('/:teamId/leave', authorizeRoles('student'), teamController.leaveT
 router.post('/:teamId/request-edit', authorizeRoles('student'), teamController.requestEditAccess);
 router.post('/:teamId/lock', authorizeRoles('student'), teamController.lockTeam);
 
-// Admin routes
+// Admin routes (Teams Module Extensions)
+router.get('/progress', authorizeRoles('admin'), teamMarksController.getTeamsProgress);
+router.get('/marks', authorizeRoles('admin'), teamMarksController.getTeamsMarks);
+router.put('/marks', authorizeRoles('admin'), teamMarksController.saveMarks);
+
+// Admin routes (Legacy)
 router.get('/', authorizeRoles('admin'), teamController.getAllTeams);
 router.get('/:teamId', teamController.getTeamById);
 router.delete('/:teamId', authorizeRoles('admin'), teamController.deleteTeam);
