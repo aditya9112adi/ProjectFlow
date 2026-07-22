@@ -64,14 +64,14 @@ const Login = () => {
 
 
   return (
-    <div className="min-h-screen bg-dark-950 flex">
+    <div className="h-screen bg-dark-950 flex overflow-hidden">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-dark-900 to-accent-950" />
         <div className="absolute inset-0" style={{
           backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(217,70,239,0.15) 0%, transparent 50%)',
         }} />
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
+        <div className="relative z-10 flex flex-col justify-between p-8 lg:p-12 w-full h-full">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="ProjectFlow Logo" className="w-11 h-11 object-contain drop-shadow-lg" />
             <span className="text-white font-black text-xl">ProjectFlow</span>
@@ -88,8 +88,8 @@ const Login = () => {
       </div>
 
       {/* Right panel — login form */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
+        <div className="w-full max-w-md my-auto">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
             <img src="/logo.png" alt="ProjectFlow Logo" className="w-10 h-10 object-contain drop-shadow-md" />
