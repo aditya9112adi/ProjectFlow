@@ -17,9 +17,7 @@ const Sidebar = ({ navItems, isOpen, onClose }) => {
       }`}>
         <div className="flex items-center justify-between px-5 h-16 border-b border-dark-800 flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center shadow-lg">
-              <span className="text-white font-black text-sm">P</span>
-            </div>
+            <img src="/logo.png" alt="ProjectFlow Logo" className="w-8 h-8 object-contain" />
             <span className="text-dark-50 font-black text-base">ProjectFlow</span>
           </div>
           <button onClick={onClose} className="lg:hidden text-dark-500 hover:text-dark-200 transition-colors">

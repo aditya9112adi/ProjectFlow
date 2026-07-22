@@ -73,9 +73,7 @@ const Login = () => {
         }} />
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center shadow-lg">
-              <span className="text-white font-black text-lg">P</span>
-            </div>
+            <img src="/logo.png" alt="ProjectFlow Logo" className="w-11 h-11 object-contain drop-shadow-lg" />
             <span className="text-white font-black text-xl">ProjectFlow</span>
           </div>
           <div>
@@ -116,9 +114,7 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center">
-              <span className="text-white font-black">P</span>
-            </div>
+            <img src="/logo.png" alt="ProjectFlow Logo" className="w-10 h-10 object-contain drop-shadow-md" />
             <span className="text-white font-black text-lg">ProjectFlow</span>
           </div>
 
