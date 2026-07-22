@@ -1,14 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { Users, Search, CheckCircle, Clock, FileText, MonitorPlay, CheckSquare, Download, Link as LinkIcon } from 'lucide-react';
+import { Users, Search, CheckCircle, Clock, FileText, MonitorPlay, CheckSquare, Download, Link as LinkIcon, Unlock } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { teamService } from '../../services/team.service.js';
+import toast from 'react-hot-toast';
 
-export const StatusTab = ({ progressData, isLoading }) => {
+export const StatusTab = ({ progressData, fetchProgress, isLoading }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All Teams');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
   const [expandedTeamId, setExpandedTeamId] = useState(null);
+  const [unlockingTeamId, setUnlockingTeamId] = useState(null);
 
   const stats = progressData?.stats || {};
   const teams = progressData?.teams || [];
@@ -108,6 +111,21 @@ export const StatusTab = ({ progressData, isLoading }) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
     setSortConfig({ key, direction });
+  };
+
+  const handleUnlockTeam = async (teamId) => {
+    try {
+      setUnlockingTeamId(teamId);
+      await teamService.approveEditAccess(teamId);
+      toast.success('Team unlocked successfully');
+      if (fetchProgress) {
+        fetchProgress();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to unlock team');
+    } finally {
+      setUnlockingTeamId(null);
+    }
   };
 
   const currentData = filteredTeams.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -218,6 +236,25 @@ export const StatusTab = ({ progressData, isLoading }) => {
                     {expandedTeamId === team._id && (
                       <tr className="bg-dark-800/30 border-b border-dark-800">
                         <td colSpan="7" className="p-6">
+                          <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-bold text-white">Team Details</h3>
+                            {team.isLocked && (
+                              <button
+                                onClick={() => handleUnlockTeam(team._id)}
+                                disabled={unlockingTeamId === team._id}
+                                className="btn-secondary text-xs px-4 py-2 flex items-center gap-2"
+                              >
+                                {unlockingTeamId === team._id ? (
+                                  'Unlocking...'
+                                ) : (
+                                  <>
+                                    <Unlock className="w-3.5 h-3.5" />
+                                    Grant Edit Access
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
                           {!team.project ? (
                             <div className="flex flex-col items-center justify-center py-4">
                               <p className="text-dark-400 text-sm">No project data found for this team.</p>

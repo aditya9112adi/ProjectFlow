@@ -68,7 +68,8 @@ export const getTeamsProgress = async (req, res) => {
         prototype: prototypeSubmitted,
         report: reportSubmitted,
         currentStage: currentStageStr,
-        project: project, // Include the populated project for the UI
+        project: project,
+        isLocked: team.isLocked,
       };
     });
 

@@ -81,7 +81,7 @@ const Teams = () => {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === 'status' ? (
-          <StatusTab progressData={progressData} isLoading={isLoading} />
+          <StatusTab progressData={progressData} fetchProgress={fetchProgress} isLoading={isLoading} />
         ) : (
           <MarksTab marksData={marksData} fetchMarks={fetchMarks} isLoading={isLoading} />
         )}

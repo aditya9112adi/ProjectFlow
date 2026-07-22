@@ -172,22 +172,11 @@ const Team = () => {
               </p>
               <p className="text-xs text-dark-400 mt-0.5">
                 {team.isLocked 
-                  ? 'You cannot edit team details or members. Request access to make changes.'
+                  ? 'You cannot edit team details or members. Contact admin to make changes.'
                   : 'You have temporary access to edit team members. Lock when finished.'}
               </p>
             </div>
           </div>
-          {isLeader && team.isLocked && team.editRequestStatus === 'none' && (
-            <button onClick={handleRequestEdit} disabled={isRequestingEdit} className="btn-secondary whitespace-nowrap text-xs">
-              {isRequestingEdit ? 'Requesting...' : 'Request Edit Access'}
-            </button>
-          )}
-          {isLeader && team.isLocked && team.editRequestStatus === 'pending' && (
-            <button disabled className="px-4 py-2 bg-dark-700 text-dark-300 rounded-lg flex items-center gap-2 text-xs font-semibold cursor-not-allowed">
-              <Clock className="w-3.5 h-3.5" />
-              Request Pending
-            </button>
-          )}
           {isLeader && !team.isLocked && (
             <button onClick={handleLockTeam} disabled={isLocking} className="btn-primary whitespace-nowrap text-xs gap-2">
               <Lock className="w-3.5 h-3.5" />
