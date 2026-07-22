@@ -196,7 +196,14 @@ const CreateTeam = () => {
           </div>
 
           <div className="pt-4">
-            <Button type="submit" className="w-full" size="lg" isLoading={isSubmitting} icon={Users}>
+            <Button 
+              type="submit" 
+              className={`w-full transition-all duration-300 ${descriptionWords < 50 ? 'opacity-50 blur-[1px] pointer-events-none' : ''}`} 
+              size="lg" 
+              isLoading={isSubmitting} 
+              icon={Users}
+              disabled={descriptionWords < 50 || isSubmitting}
+            >
               {isSubmitting ? 'Creating Team...' : 'Create Team'}
             </Button>
           </div>
