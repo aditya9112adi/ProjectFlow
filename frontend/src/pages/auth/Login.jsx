@@ -83,7 +83,6 @@ const Login = () => {
               className="w-full h-full max-w-xl object-contain drop-shadow-2xl rounded-2xl"
             />
           </div>
-          <p className="text-dark-600 text-sm">© 2025 ProjectFlow. Academic Excellence Platform.</p>
         </div>
       </div>
 
