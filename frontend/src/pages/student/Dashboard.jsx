@@ -10,6 +10,8 @@ import { StatCardSkeleton } from '../../components/ui/LoadingSkeleton.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import ProgressBar from '../../components/ui/ProgressBar.jsx';
 
+import toast from 'react-hot-toast';
+
 const phaseLabels = { proposal: 'Proposal', ppt: 'PPT', report: 'Report', prototype: 'Prototype', completed: 'Completed' };
 
 const StudentDashboard = () => {
@@ -59,6 +61,7 @@ const StudentDashboard = () => {
         }));
       }
     } catch (err) {
+      toast.error(err.response?.data?.message || 'An error occurred while responding');
       console.error(err);
     }
   };

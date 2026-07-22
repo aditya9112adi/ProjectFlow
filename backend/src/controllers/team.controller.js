@@ -85,12 +85,10 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   // Send notification to invitee
   await Notification.create({
     recipient: invitee._id,
-    recipientModel: 'StudentData',
     title: 'New Team Invitation',
     message: `${req.user.firstName} has invited you to join the team: ${teamName}`,
-    type: 'team_invite',
-    relatedId: invitation._id,
-    relatedModel: 'TeamInvitation'
+    type: 'info',
+    link: '/student/dashboard'
   });
 
   res.status(200).json(new ApiResponse(200, invitation, 'Invitation sent successfully'));
@@ -133,10 +131,10 @@ export const respondToInvitation = asyncHandler(async (req, res) => {
   // Notify leader
   await Notification.create({
     recipient: invitation.leader,
-    recipientModel: 'StudentData',
     title: `Invitation ${action === 'accept' ? 'Accepted' : 'Declined'}`,
     message: `${req.user.firstName} has ${action === 'accept' ? 'accepted' : 'declined'} your invitation to join ${invitation.teamName}`,
-    type: 'team_update',
+    type: action === 'accept' ? 'success' : 'warning',
+    link: '/student/team'
   });
 
   res.status(200).json(new ApiResponse(200, invitation, `Invitation ${action}ed`));
