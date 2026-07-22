@@ -76,34 +76,12 @@ const Login = () => {
             <img src="/logo.png" alt="ProjectFlow Logo" className="w-11 h-11 object-contain drop-shadow-lg" />
             <span className="text-white font-black text-xl">ProjectFlow</span>
           </div>
-          <div>
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-600/20 border border-primary-600/30 mb-6">
-                <GraduationCap className="w-3.5 h-3.5 text-primary-400" />
-                <span className="text-primary-400 text-xs font-semibold">Academic Project Management</span>
-              </div>
-              <h1 className="text-4xl font-black text-white mb-4 leading-tight">
-                Manage Projects<br />
-                <span className="text-gradient">From Idea to Prototype</span>
-              </h1>
-              <p className="text-dark-400 text-base leading-relaxed max-w-sm">
-                A complete workflow system for college field projects — from proposal submission to final prototype approval.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: '📋', label: 'Proposal Review', desc: 'Submit & track proposals' },
-                { icon: '📊', label: 'PPT Submission', desc: 'Upload presentations' },
-                { icon: '📄', label: 'Report Upload', desc: 'Submit project reports' },
-                { icon: '🚀', label: 'Prototype Demo', desc: 'Final project showcase' },
-              ].map((f) => (
-                <div key={f.label} className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <p className="text-2xl mb-2">{f.icon}</p>
-                  <p className="text-white text-sm font-semibold">{f.label}</p>
-                  <p className="text-dark-500 text-xs mt-0.5">{f.desc}</p>
-                </div>
-              ))}
-            </div>
+          <div className="flex-1 flex items-center justify-center my-8">
+            <img 
+              src="/login-illustration.png" 
+              alt="ProjectFlow Workflow" 
+              className="w-full max-w-xl object-contain drop-shadow-2xl rounded-2xl"
+            />
           </div>
           <p className="text-dark-600 text-sm">© 2025 ProjectFlow. Academic Excellence Platform.</p>
         </div>
