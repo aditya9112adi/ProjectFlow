@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { verifyJWT, authorizeRoles } from '../middleware/auth.middleware.js';
 import * as teamController from '../controllers/team.controller.js';
 import * as teamMarksController from '../controllers/teamMarks.controller.js';
+import * as studentMarksController from '../controllers/studentMarks.controller.js';
 
 const router = Router();
 router.use(verifyJWT);
@@ -27,6 +28,9 @@ router.post('/:teamId/lock', authorizeRoles('student'), teamController.lockTeam)
 router.get('/progress', authorizeRoles('admin'), teamMarksController.getTeamsProgress);
 router.get('/marks', authorizeRoles('admin'), teamMarksController.getTeamsMarks);
 router.put('/marks', authorizeRoles('admin'), teamMarksController.saveMarks);
+
+router.get('/student-marks', authorizeRoles('admin'), studentMarksController.getStudentMarks);
+router.put('/student-marks', authorizeRoles('admin'), studentMarksController.saveStudentMarks);
 
 // Admin routes (Legacy)
 router.get('/', authorizeRoles('admin'), teamController.getAllTeams);

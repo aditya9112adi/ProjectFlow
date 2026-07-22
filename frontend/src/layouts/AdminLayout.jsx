@@ -7,7 +7,7 @@ import {
   BookOpen,
   FolderKanban,
   BarChart3,
-  Bell,
+  Award,
   Settings,
 } from 'lucide-react';
 import Sidebar from '../components/layout/Sidebar.jsx';
@@ -18,7 +18,7 @@ const adminNav = [
   { path: '/admin/pending', label: 'Pending Requests', icon: ClipboardList },
   { path: '/admin/teams', label: 'Teams', icon: Users },
   { path: '/admin/students', label: 'Students', icon: BookOpen },
-  { path: '/admin/notifications', label: 'Notifications', icon: Bell },
+  { path: '/admin/marks', label: 'Marks', icon: Award },
 ];
 
 const pageTitles = {
@@ -28,7 +28,7 @@ const pageTitles = {
   '/admin/students': 'Students',
   '/admin/projects': 'Projects',
   '/admin/analytics': 'Analytics',
-  '/admin/notifications': 'Notifications',
+  '/admin/marks': 'Student Marks',
   '/admin/profile': 'My Profile',
   '/admin/settings': 'Settings',
 };

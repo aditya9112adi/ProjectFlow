@@ -32,7 +32,7 @@ const AdminTeams = lazy(() => import('../pages/admin/Teams.jsx'));
 const AdminStudents = lazy(() => import('../pages/admin/Students.jsx'));
 const AdminProfile = lazy(() => import('../pages/admin/Profile.jsx'));
 const AdminSettings = lazy(() => import('../pages/admin/Settings.jsx'));
-const AdminNotifications = lazy(() => import('../pages/admin/Notifications.jsx'));
+const AdminMarks = lazy(() => import('../pages/admin/Marks.jsx'));
 const AdminPendingReviews = lazy(() => import('../pages/admin/PendingReviews.jsx'));
 const AdminReviewDetails = lazy(() => import('../pages/admin/ReviewDetails.jsx'));
 
@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
       { path: 'students', element: wrap(AdminStudents) },
       { path: 'profile', element: wrap(AdminProfile) },
       { path: 'settings', element: wrap(AdminSettings) },
-      { path: 'notifications', element: wrap(AdminNotifications) },
+      { path: 'marks', element: wrap(AdminMarks) },
       { path: 'pending', element: wrap(AdminPendingReviews) },
       { path: 'reviews/:id', element: wrap(AdminReviewDetails) },
     ],
