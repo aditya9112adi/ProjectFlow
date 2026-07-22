@@ -161,30 +161,7 @@ const Team = () => {
         )}
       </div>
 
-      {/* Lock/Unlock Banner */}
-      {team && (
-        <div className={`p-4 rounded-xl flex items-center justify-between border ${team.isLocked ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
-          <div className="flex items-center gap-3">
-            {team.isLocked ? <Lock className="w-5 h-5 text-amber-500" /> : <Unlock className="w-5 h-5 text-emerald-500" />}
-            <div>
-              <p className={`text-sm font-semibold ${team.isLocked ? 'text-amber-500' : 'text-emerald-500'}`}>
-                {team.isLocked ? 'Team is Locked' : 'Team is Unlocked'}
-              </p>
-              <p className="text-xs text-dark-400 mt-0.5">
-                {team.isLocked 
-                  ? 'You cannot edit team details or members. Contact admin to make changes.'
-                  : 'You have temporary access to edit team members. Lock when finished.'}
-              </p>
-            </div>
-          </div>
-          {isLeader && !team.isLocked && (
-            <button onClick={handleLockTeam} disabled={isLocking} className="btn-primary whitespace-nowrap text-xs gap-2">
-              <Lock className="w-3.5 h-3.5" />
-              {isLocking ? 'Locking...' : 'Finish & Lock'}
-            </button>
-          )}
-        </div>
-      )}
+
 
       {/* Team Info Card */}
       <div className="card p-6">
