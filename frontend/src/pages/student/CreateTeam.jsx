@@ -40,7 +40,11 @@ const MemberInput = ({ label, name, placeholder, register, error, watch, onSendI
         const student = res.data.data;
         setStudentName(student.studentName || `${student.firstName || ''} ${student.lastName || ''}`.trim());
       } catch (err) {
-        setStudentName('Student not found');
+        if (err.response?.status === 404) {
+          setStudentName('Student not found');
+        } else {
+          setStudentName('Network Error / Server Restarting');
+        }
       } finally {
         setIsLooking(false);
       }

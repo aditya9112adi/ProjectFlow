@@ -44,7 +44,10 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   const { rollNumber, teamName, projectDomain, description } = req.body;
   
   const formattedPrn = rollNumber.includes('@') ? rollNumber : `${rollNumber}@sguk.ac.in`;
-  const invitee = await StudentData.findOne({ prn: formattedPrn, isActive: true });
+  const invitee = await StudentData.findOne({ 
+    $or: [{ prn: formattedPrn }, { prn: rollNumber }],
+    isActive: true 
+  });
   
   if (!invitee) throw new ApiError(404, 'Student not found');
   if (invitee._id.toString() === req.user._id.toString()) throw new ApiError(400, 'Cannot invite yourself');
@@ -141,7 +144,10 @@ export const lookupStudent = asyncHandler(async (req, res) => {
   const { rollNumber } = req.params;
   const { StudentData } = await import('../models/StudentData.model.js');
   const formattedPrn = rollNumber.includes('@') ? rollNumber : `${rollNumber}@sguk.ac.in`;
-  const student = await StudentData.findOne({ prn: formattedPrn, isActive: true })
+  const student = await StudentData.findOne({ 
+    $or: [{ prn: formattedPrn }, { prn: rollNumber }],
+    isActive: true 
+  })
     .select('studentName prn department avatar');
   if (!student) throw new ApiError(404, 'Student not found');
   res.status(200).json(new ApiResponse(200, student, 'Student found'));
