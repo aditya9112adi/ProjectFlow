@@ -261,13 +261,20 @@ export const StatusTab = ({ progressData, fetchProgress, isLoading }) => {
                             {team.members.map((member, idx) => (
                               <div key={idx} className="bg-dark-900 border border-dark-700 p-3 rounded-lg flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-primary-600/20 text-primary-400 flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
-                                  {member.user?.firstName?.charAt(0)}{member.user?.lastName?.charAt(0)}
+                                  {member.user?.studentName?.charAt(0) || '?'}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-dark-100 text-sm font-medium truncate">
-                                    {member.user?.firstName} {member.user?.lastName}
+                                    {member.user?.studentName || 'Unknown Student'}
                                   </p>
-                                  <p className="text-dark-400 text-xs truncate capitalize">{member.role}</p>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${member.role === 'leader' ? 'bg-amber-500/20 text-amber-500' : 'bg-dark-700 text-dark-300'}`}>
+                                      {member.role}
+                                    </span>
+                                    {member.user?.prn && (
+                                      <span className="text-dark-400 text-xs truncate">{member.user.prn.split('@')[0]}</span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             ))}
