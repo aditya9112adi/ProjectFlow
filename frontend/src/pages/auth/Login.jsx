@@ -101,9 +101,6 @@ const Login = () => {
                    Innovation
                  </span>
                </h1>
-               <p className="text-slate-300 text-lg lg:text-xl leading-relaxed max-w-md mx-auto lg:mx-0">
-                 Your centralized workspace for collaborative project management, seamless phase submissions, and real-time team synchronization.
-               </p>
             </div>
           </div>
         </div>
