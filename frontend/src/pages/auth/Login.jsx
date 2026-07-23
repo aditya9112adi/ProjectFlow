@@ -75,7 +75,7 @@ const Login = () => {
   return (
     <div className="h-screen relative flex overflow-hidden bg-slate-950">
       {/* Full-screen background gradients */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/80 via-slate-900 to-emerald-950/80 opacity-90" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#1e1b4b] via-[#0f172a] to-[#2e1065] opacity-90" />
       <div className="absolute inset-0" style={{
         backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(6,182,212,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 60%)',
       }} />
@@ -109,8 +109,8 @@ const Login = () => {
         </div>
 
         {/* Right Side: Login Box */}
-        <div className="lg:w-1/2 flex items-center justify-center lg:justify-end mt-12 lg:mt-0 mb-12 lg:mb-0">
-          <div className="w-full max-w-md bg-slate-900/60 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+        <div className="lg:w-1/2 flex items-start justify-center lg:justify-end mt-[60px] lg:mt-[80px] mb-12 lg:mb-0">
+          <div className="w-full max-w-md bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
           <div className="mb-8 text-center">
             <h2 className="text-white text-3xl font-black mb-2 drop-shadow-sm">Sign In</h2>
             <p className="text-slate-300">Access your academic project workspace</p>
