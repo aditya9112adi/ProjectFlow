@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { verifyJWT, authorizeRoles } from '../middleware/auth.middleware.js';
 import { userController } from '../controllers/user.controller.js';
+import * as notificationController from '../controllers/notification.controller.js';
 import { upload } from '../middleware/upload.middleware.js';
 import { StudentData } from '../models/StudentData.model.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -13,6 +14,8 @@ router.get('/profile', userController.getProfile);
 router.patch('/profile', userController.updateProfile);
 router.post('/avatar', upload.single('avatar'), userController.uploadAvatar);
 router.get('/dashboard/stats', userController.getDashboardStats);
+
+router.post('/notifications/broadcast', notificationController.broadcastAnnouncement);
 
 router.get('/students', asyncHandler(async (req, res) => {
   const { department, academicYear, page = 1, limit = 20 } = req.query;

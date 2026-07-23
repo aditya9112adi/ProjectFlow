@@ -9,6 +9,7 @@ import {
   BarChart3,
   Award,
   Settings,
+  Bell,
 } from 'lucide-react';
 import Sidebar from '../components/layout/Sidebar.jsx';
 import Topbar from '../components/layout/Topbar.jsx';
@@ -19,6 +20,7 @@ const adminNav = [
   { path: '/admin/teams', label: 'Teams', icon: Users },
   { path: '/admin/students', label: 'Students', icon: BookOpen },
   { path: '/admin/marks', label: 'Marks', icon: Award },
+  { path: '/admin/announcements', label: 'Announcements', icon: Bell },
 ];
 
 const pageTitles = {
@@ -29,6 +31,7 @@ const pageTitles = {
   '/admin/projects': 'Projects',
   '/admin/analytics': 'Analytics',
   '/admin/marks': 'Student Marks',
+  '/admin/announcements': 'Announcements',
   '/admin/profile': 'My Profile',
   '/admin/settings': 'Settings',
 };

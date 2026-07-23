@@ -35,6 +35,7 @@ const AdminSettings = lazy(() => import('../pages/admin/Settings.jsx'));
 const AdminMarks = lazy(() => import('../pages/admin/Marks.jsx'));
 const AdminPendingReviews = lazy(() => import('../pages/admin/PendingReviews.jsx'));
 const AdminReviewDetails = lazy(() => import('../pages/admin/ReviewDetails.jsx'));
+const AdminAnnouncements = lazy(() => import('../pages/admin/Announcements.jsx'));
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +82,7 @@ export const router = createBrowserRouter([
       { path: 'profile', element: wrap(AdminProfile) },
       { path: 'settings', element: wrap(AdminSettings) },
       { path: 'marks', element: wrap(AdminMarks) },
+      { path: 'announcements', element: wrap(AdminAnnouncements) },
       { path: 'pending', element: wrap(AdminPendingReviews) },
       { path: 'reviews/:id', element: wrap(AdminReviewDetails) },
     ],

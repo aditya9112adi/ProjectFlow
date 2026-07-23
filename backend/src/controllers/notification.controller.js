@@ -22,3 +22,17 @@ export const deleteNotification = asyncHandler(async (req, res) => {
   await notificationService.deleteNotification(req.params.id, req.user._id);
   res.status(200).json(new ApiResponse(200, {}, 'Notification deleted'));
 });
+
+export const broadcastAnnouncement = asyncHandler(async (req, res) => {
+  const { title, message, type } = req.body;
+  if (!title || !message) {
+    return res.status(400).json(new ApiResponse(400, null, 'Title and message are required'));
+  }
+  const count = await notificationService.broadcastToStudents({
+    senderId: req.user._id,
+    type,
+    title,
+    message
+  });
+  res.status(200).json(new ApiResponse(200, { count }, `Announcement sent to ${count} students`));
+});
