@@ -100,7 +100,7 @@ const Login = () => {
       }} />
 
       {/* Top Right Logo */}
-      <div className="absolute top-6 right-6 md:top-8 md:right-10 z-50 w-32 md:w-40 lg:w-48">
+      <div className="absolute top-6 right-6 md:top-8 md:right-10 z-50 w-48 md:w-56 lg:w-72">
         <img 
           src="/niat-black.png" 
           alt="NIAT Logo" 
