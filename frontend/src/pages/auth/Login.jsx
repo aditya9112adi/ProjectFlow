@@ -87,7 +87,7 @@ const Login = () => {
         <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 pt-8 lg:pt-0">
           
           {/* NIAT Logo (Normal Flow) */}
-          <div className="w-[30vw] min-w-[200px] mb-12">
+          <div className="w-[30vw] min-w-[200px] mb-8">
             <img 
               src="/niat-brand.png" 
               alt="NIAT Brand" 
@@ -96,7 +96,6 @@ const Login = () => {
             />
           </div>
 
-          <img src="/logo.png" alt="ProjectFlow Brand Logo" className="h-16 lg:h-20 w-auto object-contain drop-shadow-2xl mb-8 mix-blend-screen" />
           <div className="space-y-4 max-w-lg">
              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                Streamlining Academic <br className="hidden lg:block" />
@@ -105,7 +104,7 @@ const Login = () => {
              <p className="text-slate-300 text-lg leading-relaxed">
                Your centralized workspace for collaborative project management, seamless phase submissions, and real-time team synchronization.
              </p>
-           </div>
+          </div>
         </div>
 
         {/* Right Side: Login Box */}
