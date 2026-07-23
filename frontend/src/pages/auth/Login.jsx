@@ -109,9 +109,9 @@ const Login = () => {
 
         {/* Right Side: Login Box */}
         <div className="lg:w-1/2 flex items-center justify-center lg:justify-end mb-12 lg:mb-0 h-full">
-          <div className="w-full max-w-md h-[50vh] flex flex-col bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-4 lg:p-6 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
-            <div className="flex-1 overflow-y-auto scrollbar-hide pr-2 -mr-2 pb-2">
-              <div className="mb-3 text-center">
+          <div className="w-full max-w-sm h-[65vh] min-h-[450px] flex flex-col bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-4 lg:p-6 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden mx-auto lg:mx-0">
+            <div className="flex-1 overflow-y-auto scrollbar-hide pr-2 -mr-2 pb-2 flex flex-col justify-center">
+              <div className="mb-4 text-center">
                 <h2 className="text-white text-2xl font-black mb-1 drop-shadow-sm">Sign In</h2>
             <p className="text-slate-300 text-sm">Access your academic project workspace</p>
           </div>
