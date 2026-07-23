@@ -80,12 +80,23 @@ const Login = () => {
         backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(99,102,241,0.2) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(217,70,239,0.2) 0%, transparent 60%)',
       }} />
 
+      {/* Top Left Header (Red NIAT & Kolhapur) */}
+      <div className="absolute top-6 left-6 lg:top-10 lg:left-12 z-20 flex items-center gap-4">
+        <img 
+          src="/niat-brand.png" 
+          alt="NIAT Brand" 
+          className="h-10 lg:h-12 w-auto object-contain" 
+          style={{ filter: 'invert(22%) sepia(95%) saturate(7080%) hue-rotate(352deg) brightness(94%) contrast(118%)' }}
+        />
+        <span className="text-[#DC2626] font-black text-xl lg:text-2xl uppercase tracking-wider">Kolhapur</span>
+      </div>
+
       {/* Main Content Wrapper */}
-      <div className="relative z-10 w-full flex flex-col lg:flex-row p-6 lg:p-12 h-full overflow-y-auto lg:overflow-hidden">
+      <div className="relative z-10 w-full flex flex-col lg:flex-row p-6 lg:p-12 h-full overflow-y-auto lg:overflow-hidden pt-28 lg:pt-12">
         
         {/* Left Side: Brand & Text */}
         <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 mt-8 lg:mt-0">
-           <img src="/niat-brand.png" alt="NIAT Brand" className="w-[80%] max-w-md h-auto object-contain drop-shadow-2xl mb-8" />
+           <img src="/logo.png" alt="ProjectFlow Brand Logo" className="w-[30%] max-w-[200px] h-auto object-contain drop-shadow-2xl mb-8" />
            <div className="space-y-4 max-w-lg">
              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                Streamlining Academic <br className="hidden lg:block" />
