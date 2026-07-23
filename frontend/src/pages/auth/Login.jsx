@@ -96,7 +96,7 @@ const Login = () => {
         
         {/* Left Side: Brand & Text */}
         <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 mt-8 lg:mt-0">
-           <img src="/logo.png" alt="ProjectFlow Brand Logo" className="h-10 lg:h-12 w-auto object-contain drop-shadow-2xl mb-8" />
+           <img src="/logo.png" alt="ProjectFlow Brand Logo" className="h-16 lg:h-20 w-auto object-contain drop-shadow-2xl mb-8 mix-blend-screen" />
            <div className="space-y-4 max-w-lg">
              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                Streamlining Academic <br className="hidden lg:block" />
