@@ -70,7 +70,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex bg-slate-950 font-sans">
+    <div className="h-screen relative flex bg-slate-950 font-sans overflow-hidden">
       {/* Background Gradients */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#2e1065] opacity-90" />
       <div className="absolute inset-0" style={{
@@ -78,7 +78,7 @@ const Login = () => {
       }} />
 
       {/* Main Split Layout */}
-      <div className="relative z-10 w-full flex flex-col lg:flex-row min-h-screen">
+      <div className="relative z-10 w-full flex flex-col lg:flex-row h-full">
         
         {/* Left Side: Brand & Text */}
         <div className="lg:w-1/2 flex flex-col justify-center items-center lg:items-start p-8 lg:p-24 overflow-hidden">
@@ -109,17 +109,17 @@ const Login = () => {
         </div>
 
         {/* Right Side: Login Form */}
-        <div className="lg:w-1/2 flex items-center justify-center p-6 lg:p-12 h-full min-h-[100dvh]">
+        <div className="lg:w-1/2 flex items-center justify-center p-4 lg:p-8 h-full">
           
-          <div className="w-full max-w-[420px] bg-slate-900/60 backdrop-blur-2xl p-8 lg:p-10 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+          <div className="w-full max-w-[420px] bg-slate-900/60 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-h-full overflow-y-auto scrollbar-hide">
             
-            <div className="mb-8">
-              <h2 className="text-white text-3xl font-bold tracking-tight mb-2">Sign In</h2>
+            <div className="mb-6">
+              <h2 className="text-white text-3xl font-bold tracking-tight mb-1">Sign In</h2>
               <p className="text-slate-400 text-sm">Access your academic project workspace</p>
             </div>
 
             {/* Segmented Control (Tabs) */}
-            <div className="flex p-1 bg-slate-950/60 rounded-xl mb-8 border border-white/5 relative">
+            <div className="flex p-1 bg-slate-950/60 rounded-xl mb-6 border border-white/5 relative">
               <button
                 className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                   activeTab === 'student' 
@@ -155,8 +155,8 @@ const Login = () => {
 
             {/* Student Form */}
             {activeTab === 'student' && (
-              <form onSubmit={handleStudentSubmit(onStudentSubmit)} className="space-y-5 animate-fade-in">
-                <div className="space-y-2">
+              <form onSubmit={handleStudentSubmit(onStudentSubmit)} className="space-y-4 animate-fade-in">
+                <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-slate-300" htmlFor="login-prn">
                     Student PRN (Last 3 Digits)
                   </label>
@@ -198,7 +198,7 @@ const Login = () => {
                   )}
                 </button>
                 
-                <div className="relative py-4">
+                <div className="relative py-2">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-slate-800"></div>
                   </div>
@@ -226,8 +226,8 @@ const Login = () => {
 
             {/* Admin Form */}
             {activeTab === 'admin' && (
-              <form onSubmit={handleAdminSubmit(onAdminSubmit)} className="space-y-5 animate-fade-in">
-                <div className="space-y-2">
+              <form onSubmit={handleAdminSubmit(onAdminSubmit)} className="space-y-4 animate-fade-in">
+                <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-slate-300" htmlFor="login-email">
                     Email Address
                   </label>
