@@ -81,11 +81,11 @@ const Login = () => {
       }} />
 
       {/* Top Left Header (White NIAT) */}
-      <div className="absolute top-6 left-6 lg:top-10 lg:left-12 z-20 flex items-center">
+      <div className="absolute top-6 left-6 lg:top-10 lg:left-12 z-20 flex items-center w-[30vw]">
         <img 
           src="/niat-brand.png" 
           alt="NIAT Brand" 
-          className="h-16 lg:h-20 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
+          className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
           style={{ filter: 'brightness(0) invert(1)' }}
         />
       </div>
