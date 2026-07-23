@@ -80,14 +80,26 @@ const Login = () => {
         backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(99,102,241,0.2) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(217,70,239,0.2) 0%, transparent 60%)',
       }} />
 
-      {/* Top Left Brand Image */}
-      <div className="absolute top-6 left-6 lg:top-12 lg:left-12 z-10 w-[40%] md:w-[30%] max-w-[320px]">
-        <img src="/niat-brand.png" alt="NIAT Brand" className="w-full h-auto object-contain drop-shadow-2xl" />
-      </div>
+      {/* Main Content Wrapper */}
+      <div className="relative z-10 w-full flex flex-col lg:flex-row p-6 lg:p-12 h-full overflow-y-auto lg:overflow-hidden">
+        
+        {/* Left Side: Brand & Text */}
+        <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 mt-8 lg:mt-0">
+           <img src="/niat-brand.png" alt="NIAT Brand" className="w-[80%] max-w-md h-auto object-contain drop-shadow-2xl mb-8" />
+           <div className="space-y-4 max-w-lg">
+             <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+               Streamlining Academic <br className="hidden lg:block" />
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-accent-400">Innovation</span>
+             </h1>
+             <p className="text-dark-300 text-lg leading-relaxed">
+               Your centralized workspace for collaborative project management, seamless phase submissions, and real-time team synchronization.
+             </p>
+           </div>
+        </div>
 
-      {/* Centered login form */}
-      <div className="flex-1 flex items-center justify-center p-6 z-10 overflow-y-auto">
-        <div className="w-full max-w-md my-auto bg-dark-950/60 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] mt-24 lg:mt-0">
+        {/* Right Side: Login Box */}
+        <div className="lg:w-1/2 flex items-center justify-center lg:justify-end mt-12 lg:mt-0 mb-12 lg:mb-0">
+          <div className="w-full max-w-md bg-dark-950/60 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
           <div className="mb-8 text-center">
             <h2 className="text-white text-3xl font-black mb-2 drop-shadow-sm">Sign In</h2>
             <p className="text-dark-300">Access your academic project workspace</p>
@@ -234,6 +246,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
