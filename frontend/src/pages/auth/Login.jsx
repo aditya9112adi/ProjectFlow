@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, LogIn, GraduationCap, BookOpen, UserCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const studentSchema = z.object({
@@ -17,7 +18,7 @@ const adminSchema = z.object({
 });
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('student');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,6 +41,22 @@ const Login = () => {
   const { register: registerAdmin, handleSubmit: handleAdminSubmit, formState: { errors: adminErrors } } = useForm({
     resolver: zodResolver(adminSchema),
     mode: 'onTouched',
+  });
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
+      try {
+        const user = await googleLogin(tokenResponse.access_token);
+        toast.success(`Welcome back, ${user.firstName}! 👋`);
+        navigate('/student/dashboard', { replace: true });
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Google Login failed.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: () => toast.error('Google Sign-In was cancelled or failed.'),
   });
 
   const onStudentSubmit = async (data) => {
@@ -206,8 +223,9 @@ const Login = () => {
                 
                 <button
                   type="button"
-                  onClick={() => toast('Google Sign-In is not configured for Students yet.')}
-                  className="w-full h-11 bg-white hover:bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl flex items-center justify-center gap-3 transition-all focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
+                  onClick={() => handleGoogleLogin()}
+                  className="w-full h-11 bg-white hover:bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl flex items-center justify-center gap-3 transition-all focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={isLoading}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

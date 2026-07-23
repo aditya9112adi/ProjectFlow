@@ -56,6 +56,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleLogin = async (credential) => {
+    dispatch({ type: 'AUTH_LOADING' });
+    try {
+      const res = await authService.googleLogin(credential);
+      dispatch({ type: 'AUTH_SUCCESS', payload: res.data.data.user });
+      return res.data.data.user;
+    } catch (error) {
+      dispatch({ type: 'AUTH_FAILURE', payload: error.response?.data?.message });
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await authService.logout();
@@ -76,7 +88,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, register, checkAuth, updateUser }}>
+    <AuthContext.Provider value={{ ...state, login, googleLogin, logout, register, checkAuth, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

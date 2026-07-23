@@ -10,6 +10,7 @@ const router = Router();
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.post('/google-login', authController.googleLogin);
 router.post('/logout', verifyJWT, authController.logout);
 router.post('/refresh-token', authController.refreshToken);
 router.get('/me', verifyJWT, authController.getMe);
