@@ -80,23 +80,24 @@ const Login = () => {
         backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(6,182,212,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 60%)',
       }} />
 
-      {/* Top Left Header (White NIAT) */}
-      <div className="absolute top-6 left-6 lg:top-10 lg:left-12 z-20 flex items-center w-[30vw]">
-        <img 
-          src="/niat-brand.png" 
-          alt="NIAT Brand" 
-          className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
-          style={{ filter: 'brightness(0) invert(1)' }}
-        />
-      </div>
-
       {/* Main Content Wrapper */}
-      <div className="relative z-10 w-full flex flex-col lg:flex-row p-6 lg:p-12 h-full overflow-y-auto lg:overflow-hidden pt-28 lg:pt-12">
+      <div className="relative z-10 w-full flex flex-col lg:flex-row p-6 lg:p-12 h-full overflow-y-auto lg:overflow-hidden">
         
         {/* Left Side: Brand & Text */}
-        <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 mt-8 lg:mt-0">
-           <img src="/logo.png" alt="ProjectFlow Brand Logo" className="h-16 lg:h-20 w-auto object-contain drop-shadow-2xl mb-8 mix-blend-screen" />
-           <div className="space-y-4 max-w-lg">
+        <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 pt-8 lg:pt-0">
+          
+          {/* NIAT Logo (Normal Flow) */}
+          <div className="w-[30vw] min-w-[200px] mb-12">
+            <img 
+              src="/niat-brand.png" 
+              alt="NIAT Brand" 
+              className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
+              style={{ filter: 'brightness(0) invert(1)' }}
+            />
+          </div>
+
+          <img src="/logo.png" alt="ProjectFlow Brand Logo" className="h-16 lg:h-20 w-auto object-contain drop-shadow-2xl mb-8 mix-blend-screen" />
+          <div className="space-y-4 max-w-lg">
              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                Streamlining Academic <br className="hidden lg:block" />
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">Innovation</span>
