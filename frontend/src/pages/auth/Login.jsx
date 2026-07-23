@@ -73,40 +73,24 @@ const Login = () => {
 
 
   return (
-    <div className="h-screen bg-dark-950 flex overflow-hidden">
-      {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-dark-900 to-accent-950" />
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(217,70,239,0.15) 0%, transparent 50%)',
-        }} />
-        <div className="relative z-10 flex flex-col justify-between p-8 lg:p-12 w-full h-full">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="ProjectFlow Logo" className="w-11 h-11 object-contain drop-shadow-lg" />
-            <span className="text-white font-black text-xl">ProjectFlow</span>
-          </div>
-          <div className="flex-1 flex items-center justify-center my-4 min-h-0">
-            <img 
-              src="/login-illustration.png" 
-              alt="ProjectFlow Workflow" 
-              className="w-full h-full max-w-xl object-contain drop-shadow-2xl rounded-2xl"
-            />
-          </div>
-        </div>
+    <div className="h-screen relative flex overflow-hidden bg-dark-950">
+      {/* Full-screen background gradients */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-dark-900 to-accent-950 opacity-90" />
+      <div className="absolute inset-0" style={{
+        backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(99,102,241,0.2) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(217,70,239,0.2) 0%, transparent 60%)',
+      }} />
+
+      {/* Top Left Brand Image */}
+      <div className="absolute top-6 left-6 lg:top-12 lg:left-12 z-10 w-[40%] md:w-[30%] max-w-[320px]">
+        <img src="/niat-brand.png" alt="NIAT Brand" className="w-full h-auto object-contain drop-shadow-2xl" />
       </div>
 
-      {/* Right panel — login form */}
-      <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
-        <div className="w-full max-w-md my-auto">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <img src="/logo.png" alt="ProjectFlow Logo" className="w-10 h-10 object-contain drop-shadow-md" />
-            <span className="text-white font-black text-lg">ProjectFlow</span>
-          </div>
-
+      {/* Centered login form */}
+      <div className="flex-1 flex items-center justify-center p-6 z-10 overflow-y-auto">
+        <div className="w-full max-w-md my-auto bg-dark-950/60 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] mt-24 lg:mt-0">
           <div className="mb-8 text-center">
-            <h2 className="text-dark-50 text-3xl font-black mb-2">Sign In</h2>
-            <p className="text-dark-500">Access your academic project workspace</p>
+            <h2 className="text-white text-3xl font-black mb-2 drop-shadow-sm">Sign In</h2>
+            <p className="text-dark-300">Access your academic project workspace</p>
           </div>
 
           {/* Login Tabs */}
