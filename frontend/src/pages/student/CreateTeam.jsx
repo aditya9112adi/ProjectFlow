@@ -9,6 +9,7 @@ import { teamService } from '../../services/team.service.js';
 import Button from '../../components/ui/Button.jsx';
 import Input from '../../components/ui/Input.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useSocket } from '../../context/SocketContext.jsx';
 import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 
 const getWordCount = (str) => (str ? str.trim().split(/\s+/).filter(Boolean).length : 0);
@@ -144,6 +145,8 @@ const CreateTeam = () => {
 
   const [invitations, setInvitations] = useState([]);
 
+  const { socket } = useSocket();
+
   const fetchInvitations = async () => {
     try {
       const res = await teamService.getMyInvitations();
@@ -155,10 +158,15 @@ const CreateTeam = () => {
 
   useEffect(() => {
     fetchInvitations();
-    // Poll for status updates every 5 seconds
-    const interval = setInterval(fetchInvitations, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    
+    if (socket) {
+      socket.on('invitation_responded', fetchInvitations);
+      
+      return () => {
+        socket.off('invitation_responded', fetchInvitations);
+      };
+    }
+  }, [socket]);
 
   const getInvitationStatus = (prnSuffix) => {
     if (!prnSuffix) return null;

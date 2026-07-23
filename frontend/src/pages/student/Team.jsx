@@ -10,9 +10,11 @@ import LoadingSkeleton from '../../components/ui/LoadingSkeleton.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
+import { useSocket } from '../../context/SocketContext.jsx';
 
 const Team = () => {
   const { user } = useAuth();
+  const { socket } = useSocket();
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -26,15 +28,30 @@ const Team = () => {
 
   useEffect(() => {
     fetchTeam();
-  }, []);
+    
+    if (socket) {
+      socket.on('team_updated', fetchTeam);
+      
+      return () => {
+        socket.off('team_updated', fetchTeam);
+      };
+    }
+  }, [socket]);
 
   const fetchTeam = async () => {
     setIsLoading(true);
     try {
       const res = await teamService.getMyTeam();
-      setTeam(res.data.data);
-    } catch {
-      setTeam(null);
+      const teamData = res.data?.data || null;
+      setTeam(teamData);
+      
+      if (teamData && socket) {
+        socket.emit('join_team', teamData._id);
+      }
+    } catch (err) {
+      if (err.response?.status !== 404) {
+        console.error('Failed to fetch team', err);
+      }
     } finally {
       setIsLoading(false);
     }

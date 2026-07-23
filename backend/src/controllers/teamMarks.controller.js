@@ -147,6 +147,8 @@ export const getTeamsMarks = async (req, res) => {
   }
 };
 
+import { getIO } from '../config/socket.js';
+
 // Save Marks (Bulk or Single)
 export const saveMarks = async (req, res) => {
   try {
@@ -179,6 +181,9 @@ export const saveMarks = async (req, res) => {
       teamMarks.evaluatedBy = adminId;
       
       await teamMarks.save(); // pre-save hook calculates total
+      
+      // Notify team members
+      getIO().to(`team_${teamId}`).emit('marks_updated');
     }
 
     res.json({

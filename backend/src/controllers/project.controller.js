@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import * as projectService from '../services/project.service.js';
 import { getAdminAnalytics } from '../services/analytics.service.js';
+import { getIO } from '../config/socket.js';
 
 export const createProject = asyncHandler(async (req, res) => {
   const project = await projectService.createProject(req.user._id, req.body);
@@ -23,9 +24,13 @@ export const submitPhase = asyncHandler(async (req, res) => {
   const { projectId, phase } = req.params;
   const files = req.files;
 
-
-
   const project = await projectService.submitPhase(req.user._id, projectId, phase, req.body, files);
+  
+  // Notify admins
+  getIO().to('admins').emit('submission_made');
+  // Notify team members
+  getIO().to(`team_${project.team._id || project.team}`).emit('project_updated');
+  
   res.status(200).json(new ApiResponse(200, project, `${phase} submitted for review`));
 });
 
@@ -40,6 +45,10 @@ export const reviewPhase = asyncHandler(async (req, res) => {
     action: decision,
     comments: feedback
   });
+  
+  // Notify team members
+  getIO().to(`team_${project.team._id || project.team}`).emit('project_updated');
+  
   res.status(200).json(new ApiResponse(200, project, `Phase ${decision}`));
 });
 

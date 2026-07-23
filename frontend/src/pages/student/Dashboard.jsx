@@ -11,37 +11,62 @@ import { StatCardSkeleton } from '../../components/ui/LoadingSkeleton.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import ProgressBar from '../../components/ui/ProgressBar.jsx';
 
-import toast from 'react-hot-toast';
+import { useSocket } from '../../context/SocketContext.jsx';
 
 const phaseLabels = { proposal: 'Proposal', ppt: 'PPT', report: 'Report', prototype: 'Prototype', completed: 'Completed' };
 
 const StudentDashboard = () => {
   const { user } = useAuth();
+  const { socket } = useSocket();
   const [data, setData] = useState({ team: null, project: null, notifications: [], invitations: [] });
   const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [teamRes, projectRes, notifRes, invitesRes] = await Promise.allSettled([
-          teamService.getMyTeam(),
-          projectService.getMyProject(),
-          notificationService.getNotifications({ limit: 5 }),
-          teamService.getMyInvitations()
-        ]);
-        setData({
-          team: teamRes.status === 'fulfilled' ? teamRes.value.data.data : null,
-          project: projectRes.status === 'fulfilled' ? projectRes.value.data.data : null,
-          notifications: notifRes.status === 'fulfilled' ? notifRes.value.data.data.notifications : [],
-          invitations: invitesRes.status === 'fulfilled' ? (invitesRes.value.data.data.incoming || []) : [],
-        });
-      } finally {
-        setIsLoading(false);
+  const fetchAll = async () => {
+    try {
+      const [teamRes, projectRes, notifRes, invitesRes] = await Promise.allSettled([
+        teamService.getMyTeam(),
+        projectService.getMyProject(),
+        notificationService.getNotifications({ limit: 5 }),
+        teamService.getMyInvitations()
+      ]);
+      
+      const teamData = teamRes.status === 'fulfilled' ? teamRes.value.data.data : null;
+      
+      if (teamData && socket) {
+        socket.emit('join_team', teamData._id);
       }
-    };
+      
+      setData({
+        team: teamData,
+        project: projectRes.status === 'fulfilled' ? projectRes.value.data.data : null,
+        notifications: notifRes.status === 'fulfilled' ? notifRes.value.data.data.notifications : [],
+        invitations: invitesRes.status === 'fulfilled' ? (invitesRes.value.data.data.incoming || []) : [],
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchAll();
-  }, []);
+    
+    if (socket) {
+      socket.on('project_updated', fetchAll);
+      socket.on('team_updated', fetchAll);
+      socket.on('invitation_sent', fetchAll);
+      socket.on('invitation_responded', fetchAll);
+      socket.on('new_notification', fetchAll);
+      
+      return () => {
+        socket.off('project_updated', fetchAll);
+        socket.off('team_updated', fetchAll);
+        socket.off('invitation_sent', fetchAll);
+        socket.off('invitation_responded', fetchAll);
+        socket.off('new_notification', fetchAll);
+      };
+    }
+  }, [socket]);
 
   const { team, project, notifications, invitations } = data;
   const currentPhase = project?.currentPhase || 'proposal';

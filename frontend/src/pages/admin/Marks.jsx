@@ -8,8 +8,10 @@ import Button from '../../components/ui/Button.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import LoadingSkeleton from '../../components/ui/LoadingSkeleton.jsx';
 import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
+import { useSocket } from '../../context/SocketContext.jsx';
 
 const Marks = () => {
+  const { socket } = useSocket();
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchStudent, setSearchStudent] = useState('');
@@ -17,10 +19,6 @@ const Marks = () => {
   const [minTotalMarks, setMinTotalMarks] = useState('');
   const [editingRows, setEditingRows] = useState({}); // { studentId: { proposalMarks, pptMarks, prototypeMarks, reportMarks, presentationMarks } }
   const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
-
-  useEffect(() => {
-    fetchMarks();
-  }, []);
 
   const fetchMarks = async () => {
     try {
@@ -33,6 +31,19 @@ const Marks = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchMarks();
+    
+    if (socket) {
+      socket.on('marks_updated', fetchMarks);
+      
+      return () => {
+        socket.off('marks_updated', fetchMarks);
+      };
+    }
+  }, [socket]);
+
 
   const handleDownloadSheet = () => {
     // Generate CSV

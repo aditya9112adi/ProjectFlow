@@ -8,16 +8,15 @@ import LoadingSkeleton from '../../components/ui/LoadingSkeleton.jsx';
 import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
 import { formatDistanceToNow } from '../../utils/formatters.js';
 
+import { useSocket } from '../../context/SocketContext.jsx';
+
 const PendingReviews = () => {
+  const { socket } = useSocket();
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
   const [rejectModal, setRejectModal] = useState({ isOpen: false, projectId: null, activePhase: null, feedback: '' });
   const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
-
-  useEffect(() => {
-    fetchReviews();
-  }, []);
 
   const fetchReviews = async () => {
     try {
@@ -29,6 +28,18 @@ const PendingReviews = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchReviews();
+    
+    if (socket) {
+      socket.on('submission_made', fetchReviews);
+      
+      return () => {
+        socket.off('submission_made', fetchReviews);
+      };
+    }
+  }, [socket]);
 
   const counts = {
     all: reviews.length,

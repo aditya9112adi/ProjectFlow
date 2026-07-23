@@ -12,6 +12,7 @@ import EmptyState from '../../components/ui/EmptyState.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Input from '../../components/ui/Input.jsx';
 import ProcessingModal from '../../components/ui/ProcessingModal.jsx';
+import { useSocket } from '../../context/SocketContext.jsx';
 
 const phasesList = [
   { id: 'proposal', label: 'Proposal Submission' },
@@ -42,6 +43,7 @@ const phaseLabels = {
 
 const Progress = () => {
   const { user } = useAuth();
+  const { socket } = useSocket();
   const [project, setProject] = useState(null);
   const [team, setTeam] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,13 +52,28 @@ const Progress = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    
+    if (socket) {
+      socket.on('project_updated', fetchData);
+      socket.on('team_updated', fetchData);
+      
+      return () => {
+        socket.off('project_updated', fetchData);
+        socket.off('team_updated', fetchData);
+      };
+    }
+  }, [socket]);
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const teamRes = await teamService.getMyTeam();
-      setTeam(teamRes.data.data);
+      const teamData = teamRes.data.data;
+      setTeam(teamData);
+      
+      if (teamData && socket) {
+        socket.emit('join_team', teamData._id);
+      }
       
       try {
         const projectRes = await projectService.getMyProject();

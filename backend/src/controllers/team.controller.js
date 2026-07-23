@@ -6,6 +6,7 @@ import * as teamService from '../services/team.service.js';
 import { StudentData } from '../models/StudentData.model.js';
 import { TeamInvitation } from '../models/TeamInvitation.model.js';
 import { Notification } from '../models/Notification.model.js';
+import { getIO } from '../config/socket.js';
 
 export const createTeam = asyncHandler(async (req, res) => {
   const { memberRollNumbers } = req.body;
@@ -91,6 +92,10 @@ export const sendInvitation = asyncHandler(async (req, res) => {
     link: '/student/dashboard'
   });
 
+  // Notify the invitee in real-time
+  getIO().to(invitee._id.toString()).emit('invitation_sent');
+  getIO().to(invitee._id.toString()).emit('new_notification');
+
   res.status(200).json(new ApiResponse(200, invitation, 'Invitation sent successfully'));
 });
 
@@ -136,6 +141,10 @@ export const respondToInvitation = asyncHandler(async (req, res) => {
     type: action === 'accept' ? 'success' : 'warning',
     link: '/student/team'
   });
+
+  // Notify the leader in real-time
+  getIO().to(invitation.leader.toString()).emit('invitation_responded');
+  getIO().to(invitation.leader.toString()).emit('new_notification');
 
   res.status(200).json(new ApiResponse(200, invitation, `Invitation ${action}ed`));
 });
