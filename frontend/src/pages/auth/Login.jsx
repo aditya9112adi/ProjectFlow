@@ -99,16 +99,6 @@ const Login = () => {
         backgroundImage: 'radial-gradient(circle at 10% 90%, rgba(6,182,212,0.1) 0%, transparent 50%), radial-gradient(circle at 90% 10%, rgba(16,185,129,0.1) 0%, transparent 50%)',
       }} />
 
-      {/* Top Right Logo */}
-      <div className="absolute top-6 right-6 md:top-8 md:right-10 z-50 w-48 md:w-56 lg:w-72">
-        <img 
-          src="/niat-black.png" 
-          alt="NIAT Logo" 
-          className="w-full h-auto object-contain drop-shadow-2xl"
-          style={{ filter: 'brightness(0) invert(1)' }}
-        />
-      </div>
-
       {/* Main Split Layout */}
       <div className="relative z-10 w-full flex h-full">
 
