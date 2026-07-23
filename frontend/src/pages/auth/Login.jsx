@@ -85,10 +85,10 @@ const Login = () => {
         <img 
           src="/niat-brand.png" 
           alt="NIAT Brand" 
-          className="h-10 lg:h-12 w-auto object-contain" 
+          className="h-14 lg:h-16 w-auto object-contain" 
           style={{ filter: 'invert(22%) sepia(95%) saturate(7080%) hue-rotate(352deg) brightness(94%) contrast(118%)' }}
         />
-        <span className="text-[#DC2626] font-black text-xl lg:text-2xl uppercase tracking-wider">Kolhapur</span>
+        <span className="text-[#DC2626] font-black text-2xl lg:text-3xl uppercase tracking-wider">Kolhapur</span>
       </div>
 
       {/* Main Content Wrapper */}
@@ -96,7 +96,7 @@ const Login = () => {
         
         {/* Left Side: Brand & Text */}
         <div className="lg:w-1/2 flex flex-col justify-center items-start lg:pr-12 mt-8 lg:mt-0">
-           <img src="/logo.png" alt="ProjectFlow Brand Logo" className="w-[30%] max-w-[200px] h-auto object-contain drop-shadow-2xl mb-8" />
+           <img src="/logo.png" alt="ProjectFlow Brand Logo" className="h-14 lg:h-16 w-auto object-contain drop-shadow-2xl mb-8" />
            <div className="space-y-4 max-w-lg">
              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                Streamlining Academic <br className="hidden lg:block" />
