@@ -82,3 +82,33 @@ export const broadcastToStudents = async ({ senderId, type = 'info', title, mess
 
   return allStudents.length;
 };
+
+export const getUserNotifications = async (userId, page = 1, limit = 20) => {
+  const notifications = await Notification.find({ recipient: userId })
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  
+  const unreadCount = await Notification.countDocuments({ recipient: userId, isRead: false });
+  const total = await Notification.countDocuments({ recipient: userId });
+
+  return { notifications, unreadCount, total, page, limit };
+};
+
+export const markNotificationRead = async (notificationId, userId) => {
+  await Notification.findOneAndUpdate(
+    { _id: notificationId, recipient: userId },
+    { $set: { isRead: true, readAt: new Date() } }
+  );
+};
+
+export const markAllRead = async (userId) => {
+  await Notification.updateMany(
+    { recipient: userId, isRead: false },
+    { $set: { isRead: true, readAt: new Date() } }
+  );
+};
+
+export const deleteNotification = async (notificationId, userId) => {
+  await Notification.findOneAndDelete({ _id: notificationId, recipient: userId });
+};
