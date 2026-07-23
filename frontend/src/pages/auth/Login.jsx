@@ -45,18 +45,23 @@ const Login = () => {
 
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      console.log('Google login successful token response received.');
       setIsLoading(true);
       try {
         const user = await googleLogin(tokenResponse.access_token);
         toast.success(`Welcome back, ${user.firstName}! 👋`);
         navigate('/student/dashboard', { replace: true });
       } catch (err) {
+        console.error('Backend Google login failed:', err);
         toast.error(err.response?.data?.message || 'Google Login failed.');
       } finally {
         setIsLoading(false);
       }
     },
-    onError: () => toast.error('Google Sign-In was cancelled or failed.'),
+    onError: (error) => {
+      console.error('Google Sign-In Hook Error:', error);
+      toast.error('Google Sign-In was cancelled or failed. Check console.');
+    },
   });
 
   const onStudentSubmit = async (data) => {
@@ -223,7 +228,10 @@ const Login = () => {
                 
                 <button
                   type="button"
-                  onClick={() => handleGoogleLogin()}
+                  onClick={() => {
+                    console.log('Google Sign-In button clicked. Client ID available?', !!import.meta.env.VITE_GOOGLE_CLIENT_ID);
+                    handleGoogleLogin();
+                  }}
                   className="w-full h-11 bg-white hover:bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl flex items-center justify-center gap-3 transition-all focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                   disabled={isLoading}
                 >
