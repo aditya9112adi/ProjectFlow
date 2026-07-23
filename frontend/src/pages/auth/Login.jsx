@@ -109,10 +109,11 @@ const Login = () => {
         </div>
 
         {/* Right Side: Login Box */}
-        <div className="lg:w-1/2 flex items-start justify-center lg:justify-end mt-[60px] lg:mt-[80px] mb-12 lg:mb-0">
-          <div className="w-full max-w-md bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-          <div className="mb-8 text-center">
-            <h2 className="text-white text-3xl font-black mb-2 drop-shadow-sm">Sign In</h2>
+        <div className="lg:w-1/2 flex items-center justify-center lg:justify-end mb-12 lg:mb-0 h-full">
+          <div className="w-full max-w-md h-[50vh] flex flex-col bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-6 lg:p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div className="flex-1 overflow-y-auto scrollbar-hide pr-2 -mr-2 pb-4">
+              <div className="mb-6 text-center">
+                <h2 className="text-white text-3xl font-black mb-2 drop-shadow-sm">Sign In</h2>
             <p className="text-slate-300">Access your academic project workspace</p>
           </div>
 
@@ -277,6 +278,7 @@ const Login = () => {
             <p className="text-slate-500 text-xs">
               Access is restricted to authorized university personnel and enrolled students.
             </p>
+          </div>
           </div>
         </div>
       </div>
