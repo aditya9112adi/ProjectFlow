@@ -80,15 +80,14 @@ const Login = () => {
         backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(6,182,212,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, transparent 60%)',
       }} />
 
-      {/* Top Left Header (White NIAT & Kolhapur) */}
-      <div className="absolute top-6 left-6 lg:top-10 lg:left-12 z-20 flex items-center gap-4">
+      {/* Top Left Header (White NIAT) */}
+      <div className="absolute top-6 left-6 lg:top-10 lg:left-12 z-20 flex items-center">
         <img 
           src="/niat-brand.png" 
           alt="NIAT Brand" 
-          className="h-10 lg:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
+          className="h-16 lg:h-20 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
           style={{ filter: 'brightness(0) invert(1)' }}
         />
-        <span className="text-white font-black text-xl lg:text-2xl uppercase tracking-wider drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">Kolhapur</span>
       </div>
 
       {/* Main Content Wrapper */}
