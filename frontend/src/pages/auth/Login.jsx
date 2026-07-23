@@ -85,7 +85,7 @@ const Login = () => {
           
           <div className="w-full max-w-lg">
             {/* NIAT Logo */}
-            <div className="w-[35vw] max-w-[280px] min-w-[200px] mb-12 mx-auto lg:mx-0">
+            <div className="w-[45vw] max-w-[360px] min-w-[250px] mb-12 mx-auto lg:mx-0 lg:-ml-4">
               <img 
                 src="/niat-brand.png" 
                 alt="NIAT Brand" 
