@@ -91,7 +91,7 @@ const Login = () => {
             <img 
               src="/niat-brand.png" 
               alt="NIAT Brand" 
-              className="w-full h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
+              className="w-full h-auto object-contain object-left drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
               style={{ filter: 'brightness(0) invert(1)' }}
             />
           </div>
