@@ -13,7 +13,7 @@ const Students = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    api.get('/admin/students', { params: { limit: 100 } })
+    api.get('/admin/students', { params: { limit: 500 } })
       .then((res) => { setStudents(res.data.data.students); setTotal(res.data.data.total); })
       .catch(() => setStudents([]))
       .finally(() => setIsLoading(false));
