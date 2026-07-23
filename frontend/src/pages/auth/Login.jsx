@@ -109,17 +109,17 @@ const Login = () => {
 
         {/* Right Side: Login Box */}
         <div className="lg:w-1/2 flex items-center justify-center lg:justify-end mb-12 lg:mb-0 h-full">
-          <div className="w-full max-w-md h-[50vh] flex flex-col bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-6 lg:p-8 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
-            <div className="flex-1 overflow-y-auto scrollbar-hide pr-2 -mr-2 pb-4">
-              <div className="mb-6 text-center">
-                <h2 className="text-white text-3xl font-black mb-2 drop-shadow-sm">Sign In</h2>
-            <p className="text-slate-300">Access your academic project workspace</p>
+          <div className="w-full max-w-md h-[50vh] flex flex-col bg-gradient-to-r from-[#1e1b4b]/80 to-[#2e1065]/80 backdrop-blur-xl p-4 lg:p-6 rounded-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div className="flex-1 overflow-y-auto scrollbar-hide pr-2 -mr-2 pb-2">
+              <div className="mb-3 text-center">
+                <h2 className="text-white text-2xl font-black mb-1 drop-shadow-sm">Sign In</h2>
+            <p className="text-slate-300 text-sm">Access your academic project workspace</p>
           </div>
 
           {/* Login Tabs */}
-          <div className="flex p-1 bg-slate-800 rounded-xl mb-8 border border-white/5">
+          <div className="flex p-1 bg-slate-800 rounded-xl mb-4 border border-white/5">
             <button
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'student' ? 'bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)]' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
               }`}
               onClick={() => setActiveTab('student')}
@@ -128,7 +128,7 @@ const Login = () => {
               Student Login
             </button>
             <button
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === 'admin' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
               }`}
               onClick={() => setActiveTab('admin')}
@@ -140,11 +140,11 @@ const Login = () => {
 
           {/* Student Form */}
           {activeTab === 'student' && (
-            <form onSubmit={handleStudentSubmit(onStudentSubmit)} className="space-y-5 animate-fade-in">
-              <div className="space-y-1.5">
-                <label className="label" htmlFor="login-prn">Student PRN (Last 3 Digits)</label>
-                  <div className="flex items-center overflow-hidden rounded-xl border border-slate-700 bg-slate-800/50 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/50 transition-all h-[46px]">
-                    <div className="flex items-center justify-center pl-4 pr-2 text-slate-400 bg-slate-900/50 h-full border-r border-slate-700 font-mono text-[15px]">
+            <form onSubmit={handleStudentSubmit(onStudentSubmit)} className="space-y-3 animate-fade-in">
+              <div className="space-y-1">
+                <label className="label text-xs" htmlFor="login-prn">Student PRN (Last 3 Digits)</label>
+                  <div className="flex items-center overflow-hidden rounded-xl border border-slate-700 bg-slate-800/50 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/50 transition-all h-[36px]">
+                    <div className="flex items-center justify-center pl-3 pr-2 text-slate-400 bg-slate-900/50 h-full border-r border-slate-700 font-mono text-[13px]">
                       252921
                     </div>
                     <input
@@ -152,24 +152,24 @@ const Login = () => {
                       type="text"
                       autoComplete="off"
                       maxLength={3}
-                      className="w-[50px] bg-transparent text-white font-mono text-[15px] text-center focus:outline-none tracking-widest placeholder-slate-600"
+                      className="w-[40px] bg-transparent text-white font-mono text-[13px] text-center focus:outline-none tracking-widest placeholder-slate-600"
                       placeholder="001"
                       {...registerStudent('prn')}
                     />
-                    <div className="flex items-center justify-center pr-4 pl-1 text-slate-400 bg-slate-900/50 h-full border-l border-slate-700 font-mono text-[15px]">
+                    <div className="flex items-center justify-center pr-3 pl-1 text-slate-400 bg-slate-900/50 h-full border-l border-slate-700 font-mono text-[13px]">
                       @sguk.ac.in
                     </div>
                   </div>
-                {studentErrors.prn && <p className="text-red-400 text-xs">⚠ {studentErrors.prn.message}</p>}
-                <p className="text-slate-400 text-xs mt-2">
-                  Enter the last 3 digits of your PRN (e.g., 083 for 252921083). Only authorized PRNs are permitted.
+                {studentErrors.prn && <p className="text-red-400 text-[10px]">⚠ {studentErrors.prn.message}</p>}
+                <p className="text-slate-400 text-[10px] mt-1 leading-tight">
+                  Enter last 3 digits. Only authorized PRNs permitted.
                 </p>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-10 text-sm gap-2 mt-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg flex items-center justify-center transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                className="w-full h-8 text-sm gap-2 mt-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg flex items-center justify-center transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900"
               >
                 {isLoading ? (
                   <>
@@ -184,11 +184,11 @@ const Login = () => {
                 )}
               </button>
               
-              <div className="relative mt-4">
+              <div className="relative mt-3">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-slate-700/50"></div>
                 </div>
-                <div className="relative flex justify-center text-[11px] uppercase font-bold tracking-wider">
+                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
                   <span className="bg-slate-900/60 px-3 text-slate-500">Or</span>
                 </div>
               </div>
@@ -196,7 +196,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => toast('Google Sign-In is not configured for Students yet.')}
-                className="w-full h-9 bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-all border border-slate-700/50 hover:border-slate-500"
+                className="w-full h-8 mt-3 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-medium rounded-lg flex items-center justify-center gap-2 transition-all border border-slate-700/50 hover:border-slate-500"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -213,31 +213,31 @@ const Login = () => {
 
           {/* Admin Form */}
           {activeTab === 'admin' && (
-            <form onSubmit={handleAdminSubmit(onAdminSubmit)} className="space-y-5 animate-fade-in">
-              <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="login-email">Email Address</label>
+            <form onSubmit={handleAdminSubmit(onAdminSubmit)} className="space-y-4 animate-fade-in">
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-300 mb-1" htmlFor="login-email">Email Address</label>
                 <input
                   id="login-email"
                   type="email"
                   autoComplete="off"
-                  className={`w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent hover:border-slate-600 transition-all duration-300 ${adminErrors.email ? 'border-red-500/50 focus:ring-red-500' : ''}`}
+                  className={`w-full bg-slate-800/50 border border-slate-700 rounded-xl px-3 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent hover:border-slate-600 transition-all duration-300 ${adminErrors.email ? 'border-red-500/50 focus:ring-red-500' : ''}`}
                   placeholder="kshirsagaraditya9112@gmail.com"
                   {...registerAdmin('email')}
                 />
-                {adminErrors.email && <p className="text-red-400 text-xs">⚠ {adminErrors.email.message}</p>}
+                {adminErrors.email && <p className="text-red-400 text-[10px]">⚠ {adminErrors.email.message}</p>}
               </div>
 
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="login-password">Password</label>
-                  <a href="mailto:admin-support@projectflow.com" className="text-xs text-emerald-400 hover:text-emerald-300 hover:underline">Forgot password?</a>
+              <div className="space-y-1">
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs font-medium text-slate-300" htmlFor="login-password">Password</label>
+                  <a href="mailto:admin-support@projectflow.com" className="text-[10px] text-emerald-400 hover:text-emerald-300 hover:underline">Forgot password?</a>
                 </div>
                 <div className="relative">
                   <input
                     id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="new-password"
-                    className={`w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent hover:border-slate-600 transition-all duration-300 pr-12 ${adminErrors.password ? 'border-red-500/50 focus:ring-red-500' : ''}`}
+                    className={`w-full bg-slate-800/50 border border-slate-700 rounded-xl px-3 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent hover:border-slate-600 transition-all duration-300 pr-10 ${adminErrors.password ? 'border-red-500/50 focus:ring-red-500' : ''}`}
                     placeholder="Enter your password"
                     {...registerAdmin('password')}
                   />
@@ -256,17 +256,17 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-10 text-sm gap-2 mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg flex items-center justify-center transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                className="w-full h-8 text-sm gap-2 mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg flex items-center justify-center transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900"
               >
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Signing in...
+                    Authenticating...
                   </>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4" />
-                    Sign In
+                    Admin Login
                   </>
                 )}
               </button>
