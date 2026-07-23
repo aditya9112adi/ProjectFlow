@@ -228,6 +228,7 @@ const Marks = () => {
           <table className="w-full text-left text-sm text-dark-300">
             <thead className="bg-dark-950 text-dark-200">
               <tr>
+                <th className="px-6 py-4 font-semibold w-16 text-center">Sr. No.</th>
                 <th className="px-6 py-4 font-semibold">Student & PRN</th>
                 <th className="px-6 py-4 font-semibold">Team Name</th>
                 <th className="px-6 py-4 font-semibold text-center">Proposal<br/><span className="text-xs text-dark-400">(Max 10)</span></th>
@@ -243,25 +244,28 @@ const Marks = () => {
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}>
-                    <td colSpan="8" className="px-6 py-4">
+                    <td colSpan="9" className="px-6 py-4">
                       <LoadingSkeleton className="h-12 w-full" />
                     </td>
                   </tr>
                 ))
               ) : filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="9" className="px-6 py-8 text-center text-dark-400">
+                  <td colSpan="10" className="px-6 py-8 text-center text-dark-400">
                     No students found matching filters.
                   </td>
                 </tr>
               ) : (
-                filteredStudents.map((student) => {
+                filteredStudents.map((student, index) => {
                   const isEditing = !!editingRows[student.studentId];
                   const editData = editingRows[student.studentId] || {};
                   const isLocked = student.marks.isLocked;
 
                   return (
                     <tr key={student.studentId} className="hover:bg-dark-800/50 transition-colors group">
+                      <td className="px-6 py-4 text-center text-dark-400 font-medium">
+                        {index + 1}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="font-medium text-white">{student.studentName}</div>
                         <div className="text-xs text-dark-400">{student.prn || 'No PRN'}</div>
