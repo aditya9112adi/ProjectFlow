@@ -100,35 +100,10 @@ const Login = () => {
       }} />
 
       {/* Main Split Layout */}
-      <div className="relative z-10 w-full flex flex-col lg:flex-row h-full">
-        
-        {/* Left Side: Brand & Text */}
-        <div className="lg:w-1/2 flex flex-col justify-center items-center lg:items-start p-8 lg:p-24 overflow-hidden">
-          
-          <div className="w-full max-w-lg">
-            {/* NIAT Logo */}
-            <div className="w-[45vw] max-w-[360px] min-w-[250px] mb-12 mx-auto lg:mx-0 lg:-ml-4">
-              <img 
-                src="/niat-brand.png" 
-                alt="NIAT Brand" 
-                className="w-full h-auto object-contain object-left opacity-90 mix-blend-screen" 
-                style={{ filter: 'brightness(0) invert(1)' }}
-              />
-            </div>
+      <div className="relative z-10 w-full flex h-full">
 
-            <div className="space-y-6 text-center lg:text-left">
-               <h1 className="text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.1]">
-                 Streamlining Academic <br className="hidden lg:block" />
-                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-                   Innovation
-                 </span>
-               </h1>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Login Form */}
-        <div className="lg:w-1/2 flex items-center justify-center p-4 lg:p-8 h-full">
+        {/* Login Form (Centered) */}
+        <div className="w-full flex items-center justify-center p-4 lg:p-8 h-full">
           
           <div className="w-full max-w-[420px] bg-slate-900/60 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-h-full overflow-y-auto scrollbar-hide">
             
