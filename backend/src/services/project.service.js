@@ -223,6 +223,11 @@ export const submitPhase = async (userId, projectId, phase, data, files) => {
   if (projectId && projectId !== 'undefined') {
     const project = await Project.findById(projectId);
     if (!project) throw new ApiError(404, 'Project not found');
+    
+    const team = await Team.findById(project.team);
+    const isMember = team && team.members.some(m => m.user.toString() === userId.toString());
+    if (!isMember) throw new ApiError(403, 'You are not authorized to submit for this project');
+    
     teamId = project.team;
   } else {
     const team = await Team.findOne({ 'members.user': userId, isActive: true });

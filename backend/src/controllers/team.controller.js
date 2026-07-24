@@ -170,7 +170,31 @@ export const getMyTeam = asyncHandler(async (req, res) => {
 export const addMember = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
   const { rollNumber } = req.body;
+
+  const { StudentData } = await import('../models/StudentData.model.js');
+  const { TeamInvitation } = await import('../models/TeamInvitation.model.js');
+
+  const formattedPrn = rollNumber.includes('@') ? rollNumber : `${rollNumber}@sguk.ac.in`;
+  const invitee = await StudentData.findOne({ 
+    $or: [{ prn: formattedPrn }, { prn: rollNumber }],
+    isActive: true 
+  });
+  if (!invitee) throw new ApiError(404, 'Student not found');
+
+  const invitation = await TeamInvitation.findOne({
+    leader: req.user._id,
+    invitee: invitee._id,
+    status: 'accepted'
+  });
+
+  if (!invitation) {
+    throw new ApiError(400, 'Student must accept your invitation first before being added to the team.');
+  }
+
   const team = await teamService.addMember(teamId, req.user._id, rollNumber);
+  
+  await TeamInvitation.findByIdAndDelete(invitation._id);
+
   res.status(200).json(new ApiResponse(200, team, 'Member added'));
 });
 

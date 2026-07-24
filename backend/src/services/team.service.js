@@ -29,7 +29,12 @@ export const createTeam = async (leaderId, { name, projectDomain, description, m
     throw new ApiError(400, 'A team must have exactly 3 or 4 members (including the leader)');
   }
 
-    for (const rollNum of memberRollNumbers) {
+  const uniqueRollNumbers = [...new Set(memberRollNumbers)];
+  if (uniqueRollNumbers.length !== memberRollNumbers.length) {
+    throw new ApiError(400, 'Duplicate team members are not allowed');
+  }
+
+    for (const rollNum of uniqueRollNumbers) {
       const formattedPrn = rollNum.includes('@') ? rollNum : `${rollNum}@sguk.ac.in`;
       const student = await StudentData.findOne({ prn: formattedPrn, isActive: true });
       if (!student) throw new ApiError(404, `Student with roll number ${rollNum} not found`);

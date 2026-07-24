@@ -104,11 +104,11 @@ export const saveStudentMarks = async (req, res) => {
          continue; // skip if locked and we aren't explicitly unlocking
       }
 
-      if (proposalMarks !== undefined && proposalMarks !== '') marksDoc.proposalMarks = Number(proposalMarks);
-      if (pptMarks !== undefined && pptMarks !== '') marksDoc.pptMarks = Number(pptMarks);
-      if (prototypeMarks !== undefined && prototypeMarks !== '') marksDoc.prototypeMarks = Number(prototypeMarks);
-      if (reportMarks !== undefined && reportMarks !== '') marksDoc.reportMarks = Number(reportMarks);
-      if (presentationMarks !== undefined && presentationMarks !== '') marksDoc.presentationMarks = Number(presentationMarks);
+      if (proposalMarks !== undefined) marksDoc.proposalMarks = proposalMarks === '' ? null : Number(proposalMarks);
+      if (pptMarks !== undefined) marksDoc.pptMarks = pptMarks === '' ? null : Number(pptMarks);
+      if (prototypeMarks !== undefined) marksDoc.prototypeMarks = prototypeMarks === '' ? null : Number(prototypeMarks);
+      if (reportMarks !== undefined) marksDoc.reportMarks = reportMarks === '' ? null : Number(reportMarks);
+      if (presentationMarks !== undefined) marksDoc.presentationMarks = presentationMarks === '' ? null : Number(presentationMarks);
       
       if (isLocked !== undefined) {
         marksDoc.isLocked = isLocked;
