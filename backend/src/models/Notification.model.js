@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const notificationSchema = new mongoose.Schema(
   {
     recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'StudentData', required: true },
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'StudentData' },
+    sender: { type: mongoose.Schema.Types.ObjectId },
     type: { type: String, enum: ['info', 'success', 'warning', 'error'], default: 'info' },
     title: { type: String, required: true },
     message: { type: String, required: true },

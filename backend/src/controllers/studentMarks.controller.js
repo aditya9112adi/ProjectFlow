@@ -88,6 +88,8 @@ export const saveStudentMarks = async (req, res) => {
     for (const update of updates) {
       const { studentId, teamId, proposalMarks, pptMarks, prototypeMarks, reportMarks, presentationMarks, isLocked } = update;
       
+      if (!studentId) continue;
+      
       let marksDoc = await StudentMarks.findOne({ student: studentId });
       
       if (!marksDoc) {

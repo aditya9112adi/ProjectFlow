@@ -163,6 +163,8 @@ export const saveMarks = async (req, res) => {
     for (const update of updates) {
       const { teamId, proposalMarks, pptMarks, prototypeMarks, reportMarks } = update;
       
+      if (!teamId) continue;
+      
       const p = proposalMarks === '' || proposalMarks === undefined ? null : Number(proposalMarks);
       const pt = pptMarks === '' || pptMarks === undefined ? null : Number(pptMarks);
       const pr = prototypeMarks === '' || prototypeMarks === undefined ? null : Number(prototypeMarks);
