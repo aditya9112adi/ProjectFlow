@@ -37,7 +37,7 @@ export const submitPhase = asyncHandler(async (req, res) => {
 export const reviewPhase = asyncHandler(async (req, res) => {
   const { projectId, phase } = req.params;
   const { decision, feedback } = req.body;
-  if (!['approved', 'rejected'].includes(decision)) throw new ApiError(400, 'Decision must be approved or rejected');
+  if (!['approved', 'rejected', 'returned'].includes(decision)) throw new ApiError(400, 'Decision must be approved, rejected, or returned');
   const project = await projectService.reviewSubmission({
     adminId: req.user._id,
     projectId,

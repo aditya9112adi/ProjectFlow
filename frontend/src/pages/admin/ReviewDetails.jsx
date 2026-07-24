@@ -32,8 +32,8 @@ const ReviewDetails = () => {
   };
 
   const handleReview = async (status) => {
-    if (status === 'rejected' && !feedback.trim()) {
-      return toast.error('Feedback is required when rejecting a submission');
+    if ((status === 'rejected' || status === 'returned') && !feedback.trim()) {
+      return toast.error(`Feedback is required when ${status === 'returned' ? 'returning' : 'rejecting'} a submission`);
     }
 
     setIsSubmitting(true);
@@ -185,7 +185,7 @@ const ReviewDetails = () => {
             <h3 className="text-dark-100 font-bold text-lg mb-4">Submit Review</h3>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="label">Feedback (Required for rejection)</label>
+                <label className="label">Feedback (Required for rejection or return)</label>
                 <textarea
                   className="input min-h-[100px] py-3 resize-y"
                   placeholder="Provide constructive feedback..."
@@ -194,7 +194,17 @@ const ReviewDetails = () => {
                   disabled={isSubmitting}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => handleReview('returned')}
+                  disabled={isSubmitting || !feedback.trim()}
+                  isLoading={isSubmitting && feedback.trim() && !isSubmitting /* Hack for singular loading state */}
+                  icon={ArrowLeft}
+                  className="w-full text-amber-500 border-amber-500/20 hover:bg-amber-500/10 hover:border-amber-500/30"
+                >
+                  Return
+                </Button>
                 <Button
                   variant="danger"
                   onClick={() => handleReview('rejected')}
