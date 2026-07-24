@@ -105,7 +105,7 @@ const Login = () => {
         {/* Login Form (Centered) */}
         <div className="w-full flex items-center justify-center p-4 lg:p-8 h-full">
           
-          <div className="w-full max-w-[420px] bg-slate-900/60 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] hover:shadow-[0_0_60px_rgba(6,182,212,0.15)] hover:border-cyan-500/30 transition-all duration-500 max-h-full overflow-y-auto scrollbar-hide group">
+          <div className="w-full max-w-[420px] bg-slate-900/60 backdrop-blur-2xl p-6 lg:p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] hover:shadow-[0_0_100px_rgba(6,182,212,0.3)] hover:border-cyan-500/50 transition-all duration-500 max-h-full overflow-y-auto scrollbar-hide group">
             
             <div className="mb-6">
               <h2 className="text-white text-3xl font-bold tracking-tight mb-1">Sign In</h2>
