@@ -138,10 +138,33 @@ const CreateTeam = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [processing, setProcessing] = useState({ isOpen: false, status: 'loading', message: '' });
 
-  const { register, handleSubmit, watch, getValues, trigger, formState: { errors, isValid } } = useForm({
+  const { register, handleSubmit, watch, getValues, trigger, setValue, formState: { errors, isValid } } = useForm({
     resolver: zodResolver(schema),
     mode: 'onChange',
   });
+
+  // Load saved form data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('createTeamFormState');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        Object.keys(parsed).forEach(key => {
+          setValue(key, parsed[key], { shouldValidate: true });
+        });
+      } catch (e) {
+        console.error('Failed to parse saved form data', e);
+      }
+    }
+  }, [setValue]);
+
+  // Save form data when it changes
+  useEffect(() => {
+    const subscription = watch((value) => {
+      localStorage.setItem('createTeamFormState', JSON.stringify(value));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const [invitations, setInvitations] = useState([]);
 
@@ -224,6 +247,7 @@ const CreateTeam = () => {
       });
       
       setProcessing({ isOpen: true, status: 'success', message: 'Team created successfully! 🎉' });
+      localStorage.removeItem('createTeamFormState'); // Clear saved form data
       setTimeout(() => {
         setProcessing(prev => ({ ...prev, isOpen: false }));
         navigate('/student/team');
