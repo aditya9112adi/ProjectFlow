@@ -25,7 +25,7 @@ export const submitPhase = asyncHandler(async (req, res) => {
   const { projectId, phase } = req.params;
   const files = req.files;
 
-  const project = await projectService.submitPhase(req.user._id, projectId, phase, req.body, files);
+  const { project } = await projectService.submitPhase(req.user._id, projectId, phase, req.body, files);
   
   // Notify admins
   getIO().to('admins').emit('submission_made');
