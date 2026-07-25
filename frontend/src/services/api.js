@@ -8,7 +8,13 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
   (error) => Promise.reject(error)
 );
 
@@ -19,11 +25,18 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/auth/')) {
       originalRequest._retry = true;
       try {
-        await axios.post(
+        const refreshRes = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'}/auth/refresh-token`,
-          {},
+          { refreshToken: localStorage.getItem('refreshToken') },
           { withCredentials: true }
         );
+        
+        const newAccessToken = refreshRes.data?.data?.accessToken;
+        const newRefreshToken = refreshRes.data?.data?.refreshToken;
+        
+        if (newAccessToken) localStorage.setItem('accessToken', newAccessToken);
+        if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+        
         return api(originalRequest);
       } catch (refreshError) {
         // Refresh failed (e.g. refresh token expired)
@@ -33,9 +46,10 @@ api.interceptors.response.use(
       }
     }
     
-    // If it's a 401 and we didn't retry, and it's NOT an auth endpoint, redirect to login
     if (error.response?.status === 401 && !originalRequest.url.includes('/auth/')) {
       localStorage.removeItem('user');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       window.location.href = '/login';
     }
     

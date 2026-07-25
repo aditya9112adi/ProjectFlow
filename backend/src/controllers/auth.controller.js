@@ -42,7 +42,7 @@ const login = asyncHandler(async (req, res) => {
   res
     .cookie('accessToken', accessToken, COOKIE_OPTIONS)
     .cookie('refreshToken', refreshToken, { ...COOKIE_OPTIONS, maxAge: 10 * 24 * 60 * 60 * 1000 })
-    .json(new ApiResponse(200, { user: loggedInUser, accessToken }, 'Login successful'));
+    .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, 'Login successful'));
 });
 
 const googleLogin = asyncHandler(async (req, res) => {
@@ -87,7 +87,7 @@ const googleLogin = asyncHandler(async (req, res) => {
     .status(200)
     .cookie('accessToken', accessToken, COOKIE_OPTIONS)
     .cookie('refreshToken', refreshToken, { ...COOKIE_OPTIONS, maxAge: 10 * 24 * 60 * 60 * 1000 })
-    .json(new ApiResponse(200, { user: loggedInUser, accessToken }, 'Google Login successful'));
+    .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, 'Google Login successful'));
 });
 
 const logout = asyncHandler(async (req, res) => {
@@ -113,7 +113,7 @@ const refreshToken = asyncHandler(async (req, res) => {
     .status(200)
     .cookie('accessToken', accessToken, COOKIE_OPTIONS)
     .cookie('refreshToken', newRefreshToken, { ...COOKIE_OPTIONS, maxAge: 10 * 24 * 60 * 60 * 1000 })
-    .json(new ApiResponse(200, { accessToken }, 'Access token refreshed'));
+    .json(new ApiResponse(200, { accessToken, refreshToken: newRefreshToken }, 'Access token refreshed'));
 });
 
 const getMe = asyncHandler(async (req, res) => {

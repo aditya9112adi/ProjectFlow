@@ -48,6 +48,12 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'AUTH_LOADING' });
     try {
       const res = await authService.login(credentials);
+      if (res.data.data.accessToken) {
+        localStorage.setItem('accessToken', res.data.data.accessToken);
+      }
+      if (res.data.data.refreshToken) {
+        localStorage.setItem('refreshToken', res.data.data.refreshToken);
+      }
       dispatch({ type: 'AUTH_SUCCESS', payload: res.data.data.user });
       return res.data.data.user;
     } catch (error) {
@@ -60,6 +66,12 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'AUTH_LOADING' });
     try {
       const res = await authService.googleLogin(credential);
+      if (res.data.data.accessToken) {
+        localStorage.setItem('accessToken', res.data.data.accessToken);
+      }
+      if (res.data.data.refreshToken) {
+        localStorage.setItem('refreshToken', res.data.data.refreshToken);
+      }
       dispatch({ type: 'AUTH_SUCCESS', payload: res.data.data.user });
       return res.data.data.user;
     } catch (error) {
@@ -74,6 +86,8 @@ export const AuthProvider = ({ children }) => {
     } catch {
       // ignore
     } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       dispatch({ type: 'AUTH_LOGOUT' });
     }
   };
