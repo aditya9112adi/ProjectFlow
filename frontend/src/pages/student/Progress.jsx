@@ -235,7 +235,7 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState(null);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     defaultValues: {
       title: project?.title || '',
       domain: project?.domain || '',
@@ -247,6 +247,33 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
       liveUrl: project?.prototypeId?.liveUrl || '',
     },
   });
+
+  // Load saved form data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(`phaseFormState_${phase}`);
+    if (savedData && !isApproved && !isSubmitted) {
+      try {
+        const parsed = JSON.parse(savedData);
+        Object.keys(parsed).forEach(key => {
+          // Only set value if the project doesn't already have a saved value for it
+          // This prevents overwriting actual backend data with stale local data
+          setValue(key, parsed[key]);
+        });
+      } catch (e) {
+        console.error('Failed to parse saved form data', e);
+      }
+    }
+  }, [phase, setValue, isApproved, isSubmitted]);
+
+  // Save form data when it changes
+  useEffect(() => {
+    const subscription = watch((value) => {
+      if (!isApproved && !isSubmitted) {
+        localStorage.setItem(`phaseFormState_${phase}`, JSON.stringify(value));
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, phase, isApproved, isSubmitted]);
 
   const problemText = watch('problemStatement') || '';
   const solutionText = watch('solution') || '';
@@ -279,6 +306,7 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
       }
 
       await projectService.submitPhase(project?._id, phase, formData);
+      localStorage.removeItem(`phaseFormState_${phase}`); // Clear saved data on success
       setProcessing({ isOpen: true, status: 'success', message: `${phaseLabels[phase]} submitted successfully!` });
       onUpdate();
       setTimeout(() => setProcessing(prev => ({ ...prev, isOpen: false })), 2500);
@@ -397,12 +425,12 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
           <div className="space-y-1.5">
             <div className="flex justify-between">
               <label className="label">Problem Statement</label>
-              <span className={`text-xs ${problemWords > 200 ? 'text-warning-400' : 'text-dark-500'}`}>
-                {problemWords} / 200 words
+              <span className={`text-xs ${problemWords < 200 ? 'text-orange-400' : 'text-emerald-400'}`}>
+                {problemWords} / 200 min words
               </span>
             </div>
             <textarea
-              className={`input min-h-[120px] py-3 resize-y ${problemWords > 200 ? 'border-warning-500 focus:border-warning-500 focus:ring-warning-500/20' : ''}`}
+              className={`input min-h-[120px] py-3 resize-y ${problemWords > 0 && problemWords < 200 ? 'border-orange-500/50 focus:border-orange-500/50' : ''}`}
               placeholder="Describe the problem..."
               disabled={isLocked}
               {...register('problemStatement', { required: 'Problem statement is required' })}
@@ -412,12 +440,12 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
           <div className="space-y-1.5">
             <div className="flex justify-between">
               <label className="label">Solution</label>
-              <span className={`text-xs ${solutionWords > 200 ? 'text-warning-400' : 'text-dark-500'}`}>
-                {solutionWords} / 200 words
+              <span className={`text-xs ${solutionWords < 200 ? 'text-orange-400' : 'text-emerald-400'}`}>
+                {solutionWords} / 200 min words
               </span>
             </div>
             <textarea
-              className={`input min-h-[120px] py-3 resize-y ${solutionWords > 200 ? 'border-warning-500 focus:border-warning-500 focus:ring-warning-500/20' : ''}`}
+              className={`input min-h-[120px] py-3 resize-y ${solutionWords > 0 && solutionWords < 200 ? 'border-orange-500/50 focus:border-orange-500/50' : ''}`}
               placeholder="Describe your solution..."
               disabled={isLocked}
               {...register('solution', { required: 'Solution is required' })}
@@ -489,9 +517,15 @@ const PhaseForm = ({ phase, project, isLeader, onUpdate, isApproved, isSubmitted
       ) : null}
 
       <div className="pt-4 flex justify-end">
+        {phase === 'proposal' && (!isLocked && isLeader) && (problemWords < 200 || solutionWords < 200) && (
+          <p className="text-orange-400 text-sm mr-auto my-auto bg-orange-500/10 px-3 py-1.5 rounded-lg border border-orange-500/20">
+            Please write at least 200 words for both Problem Statement and Solution to submit.
+          </p>
+        )}
         <Button
           type="submit"
-          disabled={isSubmitting || !isLeader}
+          className={phase === 'proposal' && (problemWords < 200 || solutionWords < 200) ? 'opacity-50 blur-[1px] pointer-events-none' : ''}
+          disabled={isSubmitting || !isLeader || (phase === 'proposal' && (problemWords < 200 || solutionWords < 200))}
           isLoading={isSubmitting}
           icon={Send}
         >
