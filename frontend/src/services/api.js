@@ -26,9 +26,19 @@ api.interceptors.response.use(
         );
         return api(originalRequest);
       } catch (refreshError) {
+        // Refresh failed (e.g. refresh token expired)
+        localStorage.removeItem('user');
+        window.location.href = '/login';
         return Promise.reject(error);
       }
     }
+    
+    // If it's a 401 and we didn't retry (or it's the refresh endpoint itself), log out
+    if (error.response?.status === 401) {
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    
     return Promise.reject(error);
   }
 );

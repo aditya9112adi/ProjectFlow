@@ -17,6 +17,10 @@ import { errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
 
+// Trust proxy is required if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// so that rate limiter can correctly identify the user's IP instead of the proxy's IP.
+app.set('trust proxy', 1);
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: process.env.NODE_ENV === 'development' ? 5000 : 200,
