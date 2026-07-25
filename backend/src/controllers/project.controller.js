@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import * as projectService from '../services/project.service.js';
 import { getAdminAnalytics } from '../services/analytics.service.js';
 import { getIO } from '../config/socket.js';
+import { Project } from '../models/Project.model.js';
 
 export const createProject = asyncHandler(async (req, res) => {
   const project = await projectService.createProject(req.user._id, req.body);
@@ -54,7 +55,6 @@ export const reviewPhase = asyncHandler(async (req, res) => {
 
 export const getAllProjects = asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, status, department } = req.query;
-  const { Project } = await import('../models/Project.model.js');
   const filter = { isActive: true };
   if (status) filter.status = status;
   if (department) filter.department = department;

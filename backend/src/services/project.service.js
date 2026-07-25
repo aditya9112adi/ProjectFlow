@@ -268,10 +268,10 @@ export const reviewSubmission = async ({ adminId, projectId, phase, action, comm
   if (!submissionId) throw new ApiError(404, `No ${phase} submission found`);
 
   const modelMap = {
-    proposal: (await import('../models/Proposal.model.js')).Proposal,
-    ppt: (await import('../models/PPTSubmission.model.js')).PPTSubmission,
-    report: (await import('../models/ReportSubmission.model.js')).ReportSubmission,
-    prototype: (await import('../models/PrototypeSubmission.model.js')).PrototypeSubmission,
+    proposal: Proposal,
+    ppt: PPTSubmission,
+    report: ReportSubmission,
+    prototype: PrototypeSubmission,
   };
 
   const submission = await modelMap[phase].findById(submissionId);
@@ -319,7 +319,7 @@ export const reviewSubmission = async ({ adminId, projectId, phase, action, comm
   });
 
   // Send emails to team members
-  const team = await (await import('../models/Team.model.js')).Team.findById(project.team._id).populate('members.user', 'studentName prn');
+  const team = await Team.findById(project.team._id).populate('members.user', 'studentName prn');
   if (team) {
     for (const member of team.members) {
       await sendApprovalEmail({
@@ -337,7 +337,6 @@ export const reviewSubmission = async ({ adminId, projectId, phase, action, comm
 };
 
 export const getMyProject = async (userId) => {
-  const { Team } = await import('../models/Team.model.js');
   const team = await Team.findOne({ 'members.user': userId, isActive: true });
   if (!team) return null;
   return await getProjectByTeam(team._id);
