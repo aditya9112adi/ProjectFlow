@@ -117,7 +117,8 @@ const refreshToken = asyncHandler(async (req, res) => {
 });
 
 const getMe = asyncHandler(async (req, res) => {
-  res.status(200).json(new ApiResponse(200, req.user, 'User fetched successfully'));
+  const { accessToken } = await authService.generateTokens(req.user);
+  res.status(200).json(new ApiResponse(200, { user: req.user, accessToken }, 'User fetched successfully'));
 });
 
 export const authController = { register, login, googleLogin, logout, refreshToken, getMe };

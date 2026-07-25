@@ -34,7 +34,10 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'AUTH_LOADING' });
     try {
       const res = await authService.getMe();
-      dispatch({ type: 'AUTH_SUCCESS', payload: res.data.data });
+      if (res.data.data.accessToken) {
+        localStorage.setItem('accessToken', res.data.data.accessToken);
+      }
+      dispatch({ type: 'AUTH_SUCCESS', payload: res.data.data.user || res.data.data });
     } catch {
       dispatch({ type: 'AUTH_FAILURE', payload: null });
     }
