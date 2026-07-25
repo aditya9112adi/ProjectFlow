@@ -6,6 +6,8 @@ import * as teamService from '../services/team.service.js';
 import { StudentData } from '../models/StudentData.model.js';
 import { TeamInvitation } from '../models/TeamInvitation.model.js';
 import { Notification } from '../models/Notification.model.js';
+import { Team } from '../models/Team.model.js';
+import { Project } from '../models/Project.model.js';
 import { getIO } from '../config/socket.js';
 
 export const createTeam = asyncHandler(async (req, res) => {
@@ -151,7 +153,6 @@ export const respondToInvitation = asyncHandler(async (req, res) => {
 
 export const lookupStudent = asyncHandler(async (req, res) => {
   const { rollNumber } = req.params;
-  const { StudentData } = await import('../models/StudentData.model.js');
   const formattedPrn = rollNumber.includes('@') ? rollNumber : `${rollNumber}@sguk.ac.in`;
   const student = await StudentData.findOne({ 
     $or: [{ prn: formattedPrn }, { prn: rollNumber }],
@@ -170,9 +171,6 @@ export const getMyTeam = asyncHandler(async (req, res) => {
 export const addMember = asyncHandler(async (req, res) => {
   const { teamId } = req.params;
   const { rollNumber } = req.body;
-
-  const { StudentData } = await import('../models/StudentData.model.js');
-  const { TeamInvitation } = await import('../models/TeamInvitation.model.js');
 
   const formattedPrn = rollNumber.includes('@') ? rollNumber : `${rollNumber}@sguk.ac.in`;
   const invitee = await StudentData.findOne({ 
@@ -221,9 +219,6 @@ export const getAllTeams = asyncHandler(async (req, res) => {
   const filter = { isActive: true };
   if (department) filter.department = department;
   if (academicYear) filter.academicYear = academicYear;
-
-  const { Team } = await import('../models/Team.model.js');
-  const { Project } = await import('../models/Project.model.js');
 
   const teams = await Team.find(filter)
     .populate('members.user', 'studentName prn avatar firstName lastName rollNumber')
