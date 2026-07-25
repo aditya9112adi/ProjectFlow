@@ -33,8 +33,8 @@ api.interceptors.response.use(
       }
     }
     
-    // If it's a 401 and we didn't retry (or it's the refresh endpoint itself), log out
-    if (error.response?.status === 401) {
+    // If it's a 401 and we didn't retry, and it's NOT an auth endpoint, redirect to login
+    if (error.response?.status === 401 && !originalRequest.url.includes('/auth/')) {
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
