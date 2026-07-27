@@ -163,12 +163,14 @@ const Team = () => {
           <EmptyState
             icon={Users}
             title="You're not in a team yet"
-            description="Create a new team or ask a team leader to add you using your roll number."
+            description={user?.isDesignatedLeader ? "Create a new team or ask a team leader to add you using your roll number." : "Wait for a designated team leader to add you to their team using your roll number."}
             action={
-              <Link to="/student/team/create" className="btn-primary gap-2">
-                <Plus className="w-4 h-4" />
-                Create New Team
-              </Link>
+              user?.isDesignatedLeader ? (
+                <Link to="/student/team/create" className="btn-primary gap-2">
+                  <Plus className="w-4 h-4" />
+                  Create New Team
+                </Link>
+              ) : null
             }
           />
         </div>

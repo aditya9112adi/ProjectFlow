@@ -4,9 +4,17 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { authService } from '../services/auth.service.js';
 import { Admin } from '../models/Admin.model.js';
 import { StudentData } from '../models/StudentData.model.js';
+import { TeamLeaderPrn } from '../models/TeamLeaderPrn.model.js';
 import { OAuth2Client } from 'google-auth-library';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const attachLeaderFlag = async (user) => {
+  if (user.role === 'admin') return user.toObject ? user.toObject() : user;
+  const userObj = user.toObject ? user.toObject() : user;
+  const isLeader = await TeamLeaderPrn.exists({ prn: userObj.prn });
+  return { ...userObj, isDesignatedLeader: !!isLeader };
+};
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -38,6 +46,8 @@ const login = asyncHandler(async (req, res) => {
   } else {
     loggedInUser = await StudentData.findById(user._id).select('-refreshToken');
   }
+  
+  loggedInUser = await attachLeaderFlag(loggedInUser);
 
   res
     .cookie('accessToken', accessToken, COOKIE_OPTIONS)
@@ -81,7 +91,8 @@ const googleLogin = asyncHandler(async (req, res) => {
   const user = await authService.loginStudentByPrn(prn);
   const { accessToken, refreshToken } = await authService.generateTokens(user);
 
-  const loggedInUser = await StudentData.findById(user._id).select('-refreshToken');
+  let loggedInUser = await StudentData.findById(user._id).select('-refreshToken');
+  loggedInUser = await attachLeaderFlag(loggedInUser);
 
   res
     .status(200)
@@ -118,7 +129,8 @@ const refreshToken = asyncHandler(async (req, res) => {
 
 const getMe = asyncHandler(async (req, res) => {
   const { accessToken } = await authService.generateTokens(req.user);
-  res.status(200).json(new ApiResponse(200, { user: req.user, accessToken }, 'User fetched successfully'));
+  const userWithFlag = await attachLeaderFlag(req.user);
+  res.status(200).json(new ApiResponse(200, { user: userWithFlag, accessToken }, 'User fetched successfully'));
 });
 
 export const authController = { register, login, googleLogin, logout, refreshToken, getMe };
