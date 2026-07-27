@@ -10,9 +10,21 @@ import { OAuth2Client } from 'google-auth-library';
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const attachLeaderFlag = async (user) => {
-  if (user.role === 'admin') return user.toObject ? user.toObject() : user;
-  const userObj = user.toObject ? user.toObject() : user;
-  const isLeader = await TeamLeaderPrn.exists({ prn: userObj.prn });
+  if (user.role === 'admin') return user.toJSON ? user.toJSON() : user;
+  const userObj = user.toJSON ? user.toJSON() : user;
+  
+  if (userObj.studentName && !userObj.firstName) {
+    userObj.firstName = userObj.studentName.split(' ')[0] || '';
+    userObj.lastName = userObj.studentName.split(' ').slice(1).join(' ') || '';
+  }
+  if (userObj.prn && !userObj.rollNumber) {
+    userObj.rollNumber = userObj.prn.replace('@sguk.ac.in', '');
+  }
+  
+  // The PRN might be in the format '252921001@sguk.ac.in' or '252921001'
+  const barePrn = userObj.prn ? userObj.prn.split('@')[0] : '';
+  
+  const isLeader = await TeamLeaderPrn.exists({ prn: barePrn });
   return { ...userObj, isDesignatedLeader: !!isLeader };
 };
 
