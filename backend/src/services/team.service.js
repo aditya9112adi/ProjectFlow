@@ -10,7 +10,8 @@ export const createTeam = async (leaderId, { name, projectDomain, description, m
   const leader = await StudentData.findById(leaderId);
   if (!leader) throw new ApiError(404, 'Leader not found');
 
-  const isAllowed = await TeamLeaderPrn.exists({ prn: leader.prn });
+  const barePrn = leader.prn ? leader.prn.split('@')[0] : '';
+  const isAllowed = await TeamLeaderPrn.exists({ prn: barePrn });
   if (!isAllowed) throw new ApiError(403, 'Only designated team leaders can create a team');
 
   // Check leader doesn't already have a team
