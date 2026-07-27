@@ -12,6 +12,7 @@ import { getIO } from '../config/socket.js';
 
 export const createTeam = asyncHandler(async (req, res) => {
   const { memberRollNumbers } = req.body;
+  let invitees = [];
   
   // Verify all invited members have accepted the invitation from this leader
   if (memberRollNumbers && memberRollNumbers.length > 0) {
@@ -19,7 +20,7 @@ export const createTeam = asyncHandler(async (req, res) => {
     const studentIds = students.map(s => s._id.toString());
     
     // Except the leader themselves if included
-    const invitees = studentIds.filter(id => id !== req.user._id.toString());
+    invitees = studentIds.filter(id => id !== req.user._id.toString());
     
     for (const inviteeId of invitees) {
       const invite = await TeamInvitation.findOne({
@@ -31,15 +32,18 @@ export const createTeam = asyncHandler(async (req, res) => {
         throw new ApiError(400, `Cannot create team. All members must accept your invitation first.`);
       }
     }
-    
-    // Clear invitations after successful team creation
+  }
+
+  const team = await teamService.createTeam(req.user._id, req.body);
+  
+  // Clear invitations after successful team creation
+  if (invitees.length > 0) {
     await TeamInvitation.deleteMany({
       leader: req.user._id,
       invitee: { $in: invitees }
     });
   }
 
-  const team = await teamService.createTeam(req.user._id, req.body);
   res.status(201).json(new ApiResponse(201, team, 'Team created successfully'));
 });
 
