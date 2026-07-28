@@ -65,6 +65,10 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   const existingTeam = await teamService.getTeamByUser(invitee._id).catch(() => null);
   if (existingTeam) throw new ApiError(400, 'Student is already in a team');
 
+  // Check if they already accepted an invitation from another leader
+  const acceptedInvite = await TeamInvitation.findOne({ invitee: invitee._id, status: 'accepted' });
+  if (acceptedInvite) throw new ApiError(400, 'Student has already joined a team');
+
   // Check if invite already exists
   let invitation = await TeamInvitation.findOne({
     leader: req.user._id,
@@ -129,6 +133,10 @@ export const respondToInvitation = asyncHandler(async (req, res) => {
     // Ensure they are not already in a team
     const existingTeam = await teamService.getTeamByUser(req.user._id).catch(() => null);
     if (existingTeam) throw new ApiError(400, 'You are already in a team');
+    
+    // Check if they have already accepted another invitation
+    const acceptedInvite = await TeamInvitation.findOne({ invitee: req.user._id, status: 'accepted' });
+    if (acceptedInvite) throw new ApiError(400, 'You have already accepted another team invitation');
     
     invitation.status = 'accepted';
   } else if (action === 'reject') {
