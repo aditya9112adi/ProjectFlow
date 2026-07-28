@@ -60,6 +60,11 @@ app.get('/api/v1/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'ProjectFlow API', version: '2.0.0' });
 });
 
+// Root health check for monitoring tools (UptimeRobot, etc.)
+app.get('/', (req, res) => {
+  res.status(200).send('ProjectFlow API is running smoothly.');
+});
+
 // Global error handler
 app.use(errorHandler);
 
