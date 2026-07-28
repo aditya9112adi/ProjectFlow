@@ -3,16 +3,11 @@ import { StudentData } from '../models/StudentData.model.js';
 import { Admin } from '../models/Admin.model.js';
 import { Project } from '../models/Project.model.js';
 import { Notification } from '../models/Notification.model.js';
-import { TeamLeaderPrn } from '../models/TeamLeaderPrn.model.js';
 import { ApiError } from '../utils/ApiError.js';
 
 export const createTeam = async (leaderId, { name, projectDomain, description, memberRollNumbers }) => {
   const leader = await StudentData.findById(leaderId);
   if (!leader) throw new ApiError(404, 'Leader not found');
-
-  const barePrn = leader.prn ? leader.prn.split('@')[0] : '';
-  const isAllowed = await TeamLeaderPrn.exists({ prn: barePrn });
-  if (!isAllowed) throw new ApiError(403, 'Only designated team leaders can create a team');
 
   // Check leader doesn't already have a team
   const leaderInTeam = await Team.findOne({ 'members.user': leaderId, isActive: true });

@@ -4,7 +4,6 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { authService } from '../services/auth.service.js';
 import { Admin } from '../models/Admin.model.js';
 import { StudentData } from '../models/StudentData.model.js';
-import { TeamLeaderPrn } from '../models/TeamLeaderPrn.model.js';
 import { OAuth2Client } from 'google-auth-library';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -22,10 +21,7 @@ const attachLeaderFlag = async (user) => {
   }
   
   // The PRN might be in the format '252921001@sguk.ac.in' or '252921001'
-  const barePrn = userObj.prn ? userObj.prn.split('@')[0] : '';
-  
-  const isLeader = await TeamLeaderPrn.exists({ prn: barePrn });
-  return { ...userObj, isDesignatedLeader: !!isLeader };
+  return userObj;
 };
 
 const COOKIE_OPTIONS = {

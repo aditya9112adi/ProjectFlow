@@ -137,11 +137,11 @@ const StudentDashboard = () => {
             Welcome back, {user?.firstName}!
           </h2>
           <p className="text-dark-400 text-sm max-w-md">
-            {!team ? (user?.isDesignatedLeader ? 'Create or join a team to start your field project journey.' : 'Wait for a team leader to invite you to their team.') :
+            {!team ? 'Create or join a team to start your field project journey.' :
              !project ? 'Your team is ready. Submit your project proposal to begin.' :
              `Your project is ${progress}% complete. Keep up the great work!`}
           </p>
-          {!team && user?.isDesignatedLeader && (
+          {!team && (
             <Link to="/student/team" className="btn-primary mt-4 inline-flex">
               Get Started <ArrowRight className="w-4 h-4" />
             </Link>
@@ -160,7 +160,7 @@ const StudentDashboard = () => {
               value={team ? team.members.length + ' Members' : 'No Team'}
               icon={Users}
               gradient="linear-gradient(135deg,#6366f1,#8b5cf6)"
-              subtitle={team ? team.name : (user?.isDesignatedLeader ? 'Create a team to start' : 'Wait for an invitation')}
+              subtitle={team ? team.name : 'Create a team to start'}
             />
             <StatCard
               title="Current Phase"
@@ -202,13 +202,11 @@ const StudentDashboard = () => {
               <FolderKanban className="w-12 h-12 text-dark-700 mb-3" />
               <p className="text-dark-500 font-semibold">No project yet</p>
               <p className="text-dark-700 text-sm mt-1">
-                {!team ? (user?.isDesignatedLeader ? 'Join a team first' : 'Wait for an invitation') : 'Submit your proposal to begin'}
+                {!team ? 'Create or join a team first' : 'Submit your proposal to begin'}
               </p>
-              {(team || user?.isDesignatedLeader) && (
-                <Link to={team ? '/student/progress' : '/student/team'} className="btn-primary mt-4 text-sm">
-                  {team ? 'Submit Proposal' : 'Create Team'}
-                </Link>
-              )}
+              <Link to={team ? '/student/progress' : '/student/team'} className="btn-primary mt-4 text-sm">
+                {team ? 'Submit Proposal' : 'Create Team'}
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">
