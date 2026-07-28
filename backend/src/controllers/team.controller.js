@@ -69,6 +69,15 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   const acceptedInvite = await TeamInvitation.findOne({ invitee: invitee._id, status: 'accepted' });
   if (acceptedInvite) throw new ApiError(400, 'Student has already joined a team');
 
+  // Check if they have a pending invitation from the last 24 hours (Available Pool Logic)
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const pendingInvite = await TeamInvitation.findOne({
+    invitee: invitee._id,
+    status: 'pending',
+    createdAt: { $gt: twentyFourHoursAgo }
+  });
+  if (pendingInvite) throw new ApiError(400, 'Student is currently reviewing another invitation (Unavailable in the pool)');
+
   // Check if invite already exists
   let invitation = await TeamInvitation.findOne({
     leader: req.user._id,
@@ -169,9 +178,24 @@ export const lookupStudent = asyncHandler(async (req, res) => {
   const student = await StudentData.findOne({ 
     $or: [{ prn: formattedPrn }, { prn: rollNumber }],
     isActive: true 
-  })
-    .select('studentName prn department avatar');
+  }).select('studentName firstName lastName email prn department avatar academicYear');
   if (!student) throw new ApiError(404, 'Student not found');
+
+  // Available Student Pool Logic - Check if they are unavailable
+  const existingTeam = await teamService.getTeamByUser(student._id).catch(() => null);
+  if (existingTeam) throw new ApiError(400, 'Student is already in a team');
+
+  const acceptedInvite = await TeamInvitation.findOne({ invitee: student._id, status: 'accepted' });
+  if (acceptedInvite) throw new ApiError(400, 'Student has already joined a team');
+
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const pendingInvite = await TeamInvitation.findOne({
+    invitee: student._id,
+    status: 'pending',
+    createdAt: { $gt: twentyFourHoursAgo }
+  });
+  if (pendingInvite) throw new ApiError(400, 'Student is currently reviewing another invitation (Unavailable in the pool)');
+
   res.status(200).json(new ApiResponse(200, student, 'Student found'));
 });
 
