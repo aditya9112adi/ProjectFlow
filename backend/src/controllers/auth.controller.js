@@ -84,8 +84,8 @@ const googleLogin = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Invalid Google access token');
   }
 
-  if (!email || !email.endsWith('@sguk.ac.in')) {
-    throw new ApiError(403, 'Only @sguk.ac.in email addresses are allowed');
+  if (!email || !email.endsWith('@sguk.ac.in') || !email.startsWith('252921')) {
+    throw new ApiError(403, 'Access restricted to official student emails (must start with 252921 and end with @sguk.ac.in)');
   }
 
   // Extract PRN: 252921001@sguk.ac.in -> 252921001
