@@ -58,6 +58,8 @@ const MemberInput = ({ label, name, placeholder, register, error, watch, onSendI
       } catch (err) {
         if (err.response?.status === 404) {
           setStudentName('Student not found');
+        } else if (err.response?.data?.message) {
+          setStudentName(err.response.data.message);
         } else {
           setStudentName('Network Error / Server Restarting');
         }

@@ -63,11 +63,11 @@ export const sendInvitation = asyncHandler(async (req, res) => {
 
   // Check if they already have a team
   const existingTeam = await teamService.getTeamByUser(invitee._id).catch(() => null);
-  if (existingTeam) throw new ApiError(400, 'This student has already joined a team.');
+  if (existingTeam) throw new ApiError(400, 'This student has already joined another team and cannot be invited to a different team.');
 
   // Check if they already accepted an invitation from another leader
   const acceptedInvite = await TeamInvitation.findOne({ invitee: invitee._id, status: 'accepted' });
-  if (acceptedInvite) throw new ApiError(400, 'This student has already joined a team.');
+  if (acceptedInvite) throw new ApiError(400, 'This student has already joined another team and cannot be invited to a different team.');
 
   // Check if they have a pending invitation from the last 24 hours (Available Pool Logic)
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -76,7 +76,7 @@ export const sendInvitation = asyncHandler(async (req, res) => {
     status: 'pending',
     createdAt: { $gt: twentyFourHoursAgo }
   });
-  if (pendingInvite) throw new ApiError(400, 'This student already has a pending invitation from another team.');
+  if (pendingInvite) throw new ApiError(400, 'This student already has a pending team invitation. The student must accept or reject the existing invitation before receiving another invitation.');
 
   // Check if invite already exists
   let invitation = await TeamInvitation.findOne({
@@ -183,10 +183,10 @@ export const lookupStudent = asyncHandler(async (req, res) => {
 
   // Available Student Pool Logic - Check if they are unavailable
   const existingTeam = await teamService.getTeamByUser(student._id).catch(() => null);
-  if (existingTeam) throw new ApiError(400, 'This student has already joined a team.');
+  if (existingTeam) throw new ApiError(400, 'This student has already joined another team and cannot be invited to a different team.');
 
   const acceptedInvite = await TeamInvitation.findOne({ invitee: student._id, status: 'accepted' });
-  if (acceptedInvite) throw new ApiError(400, 'This student has already joined a team.');
+  if (acceptedInvite) throw new ApiError(400, 'This student has already joined another team and cannot be invited to a different team.');
 
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const pendingInvite = await TeamInvitation.findOne({
@@ -194,7 +194,7 @@ export const lookupStudent = asyncHandler(async (req, res) => {
     status: 'pending',
     createdAt: { $gt: twentyFourHoursAgo }
   });
-  if (pendingInvite) throw new ApiError(400, 'This student already has a pending invitation from another team.');
+  if (pendingInvite) throw new ApiError(400, 'This student already has a pending team invitation. The student must accept or reject the existing invitation before receiving another invitation.');
 
   res.status(200).json(new ApiResponse(200, student, 'Student found'));
 });
