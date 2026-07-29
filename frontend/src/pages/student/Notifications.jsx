@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Bell, Check, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { notificationService } from '../../services/notification.service.js';
+import { useSocket } from '../../context/SocketContext.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 
@@ -11,6 +12,8 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { socket } = useSocket();
 
   const fetchNotifications = async () => {
     try {
@@ -23,6 +26,21 @@ const Notifications = () => {
   };
 
   useEffect(() => { fetchNotifications(); }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    
+    const handleNewNotification = (data) => {
+      fetchNotifications();
+      toast.success(`New Announcement: ${data.title}`);
+    };
+
+    socket.on('new_notification', handleNewNotification);
+    
+    return () => {
+      socket.off('new_notification', handleNewNotification);
+    };
+  }, [socket]);
 
   const handleMarkRead = async (id) => {
     await notificationService.markAsRead(id);
