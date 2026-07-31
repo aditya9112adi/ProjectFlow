@@ -79,7 +79,7 @@ const googleLogin = asyncHandler(async (req, res) => {
     }
     
     const data = await response.json();
-    email = data.email;
+    email = data.email ? data.email.toLowerCase().trim() : '';
   } catch (err) {
     throw new ApiError(401, 'Invalid Google access token');
   }
